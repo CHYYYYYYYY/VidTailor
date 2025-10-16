@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Community</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .app-header {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: 60px;
+        }
+        
+        .app-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+        }
+        
+        .header-icons {
+            display: flex;
+            align-items: center;
+        }
+        
+        .header-icon {
+            margin-left: 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .header-icon:hover {
+            transform: scale(1.2);
+        }
+        
+        .header-back-button {
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-right: 15px;
+            color: white;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+        .header-back-button:hover {
+            transform: scale(1.1);
+        }
+        .icon {
+            display: inline-block;
+            width: 1.2em;
+            height: 1.2em;
+            text-align: center;
+            line-height: 1.2em;
+        }
+        .header-icon .icon, .header-back-button .icon {
+            font-size: 1.2rem;
+        }
+        .header-back-button .icon {
+            font-size: 1.5rem;
+        }
+        .search-container {
+            position: relative;
+            margin-left: 15px;
+        }
+        .search-input {
+            padding: 6px 10px 6px 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+            font-size: 0.9rem;
+            width: 150px;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .search-input:focus {
+            background-color: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.8);
+            width: 200px;
+            outline: none;
+        }
+        .search-icon-btn {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            pointer-events: none;
+        }
+        .help-icon {
+            margin-left: 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.3s ease, color 0.3s ease;
+            color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+        }
+        .help-icon:hover {
+            transform: scale(1.1);
+            color: white;
+        }
+        .help-icon .icon {
+            margin-right: 0px;
+        }
+        button:focus-visible, a:focus-visible, .header-icon:focus-visible, .header-back-button:focus-visible, .nav-item:focus-visible {
+            outline: 2px solid #4a00e0;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 4px rgba(74, 0, 224, 0.2);
+            border-radius: 4px; 
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 15px;
+            padding-bottom: 70px;
+        }
+        
+        .search-bar {
+            background: white;
+            border-radius: 25px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-bar input {
+            border: none;
+            outline: none;
+            flex: 1;
+            padding: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .search-icon {
+            color: #888;
+            margin-right: 10px;
+        }
+        
+        .filter-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .filter-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .filter-tab {
+            padding: 8px 15px;
+            margin-right: 10px;
+            background: white;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .filter-tab.active {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: white;
+        }
+        
+        .post-card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .post-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .post-time {
+            font-size: 0.8rem;
+            color: #888;
+        }
+        
+        .post-content {
+            margin-bottom: 15px;
+        }
+        
+        .post-text {
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+        
+        .post-image {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            max-height: 300px;
+            object-fit: cover;
+        }
+        
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #f0f0f0;
+            padding-top: 10px;
+        }
+        
+        .action-button {
+            display: flex;
+            align-items: center;
+            color: #666;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .action-button:hover {
+            color: #4a00e0;
+        }
+        
+        .action-icon {
+            margin-right: 5px;
+        }
+        
+        .join-button {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+        
+        .join-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 0, 224, 0.3);
+        }
+        
+        .group-card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .group-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .group-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            margin-right: 15px;
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .group-info {
+            flex: 1;
+        }
+        
+        .group-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .group-stats {
+            font-size: 0.8rem;
+            color: #888;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #888;
+            text-decoration: none;
+            font-size: 0.7rem;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-item.active {
+            color: #4a00e0;
+        }
+        
+        .nav-icon {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .fab-button {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(74, 0, 224, 0.3);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            z-index: 99;
+        }
+        
+        .fab-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(74, 0, 224, 0.4);
+        }
+        
+        /* 群组详情页样式 */
+        .group-detail {
+            display: none;
+        }
+        
+        .group-header {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .close-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .group-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .group-description {
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .group-members {
+            display: flex;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+        
+        .member-avatars {
+            display: flex;
+            margin-right: 10px;
+        }
+        
+        .member-avatar {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: white;
+            margin-right: -8px;
+            border: 2px solid #4a00e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.7rem;
+            color: #4a00e0;
+        }
+        
+        .chat-container {
+            margin-bottom: 20px;
+        }
+        
+        .message {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .message-content {
+            flex: 1;
+        }
+        
+        .message-sender {
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .message-time {
+            font-size: 0.8rem;
+            color: #888;
+        }
+        
+        .message-text {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 15px;
+            font-size: 0.95rem;
+            margin-top: 5px;
+        }
+        
+        .message-text ul {
+            padding-left: 20px;
+        }
+        
+        .message-text li {
+            margin-bottom: 5px;
+        }
+        
+        .ai-message .message-avatar {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            color: white;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        
+        .action-btn {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .primary-btn {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: white;
+            border: none;
+            flex: 1;
+            margin-right: 10px;
+        }
+        
+        .secondary-btn {
+            background: #f0f0f0;
+            color: #666;
+            border: none;
+            flex: 1;
+        }
+        
+        .reactions {
+            display: flex;
+            margin-top: 5px;
+        }
+        
+        .reaction {
+            background: #f0f0f0;
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-right: 8px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .reaction-icon {
+            margin-right: 5px;
+        }
+        
+        /* 创建新帖子页面样式 */
+        .create-post {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        
+        .post-modal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 500px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .close-modal {
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .modal-content {
+            padding: 20px;
+        }
+        
+        .post-user {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .post-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .post-user-info {
+            flex: 1;
+        }
+        
+        .post-user-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .post-to {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .post-dropdown {
+            margin-left: 5px;
+            cursor: pointer;
+        }
+        
+        .post-textarea {
+            width: 100%;
+            min-height: 120px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            resize: none;
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        .post-textarea:focus {
+            border-color: #4a00e0;
+            box-shadow: 0 0 0 2px rgba(74, 0, 224, 0.1);
+        }
+        
+        .tag-container {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .tag {
+            background: #f0f5ff;
+            color: #4a00e0;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .tag-close {
+            margin-left: 5px;
+            cursor: pointer;
+        }
+        
+        .add-tag {
+            background: #f0f0f0;
+            color: #666;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        
+        .post-tools {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .tool-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .tool-button:hover {
+            background: #e0e0e0;
+        }
+        
+        .post-button {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            float: right;
+        }
+        
+        .post-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 0, 224, 0.3);
+        }
+        
+        .ai-assist {
+            background: #f0f5ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .ai-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            color: #4a00e0;
+            font-weight: bold;
+        }
+        
+        .ai-icon {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .ai-list {
+            padding-left: 25px;
+        }
+        
+        .ai-list li {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        /* 添加滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #7928ca, #3700b3);
+        }
+
+/* ///////// */
+        .status-indicator {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin-left: 10px;
+            background: #e0e0e0;
+            color: #666;
+        }
+        
+        .status-online {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #4a00e0;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        .toast-notification {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            z-index: 1500;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        /* Style for error toasts */
+        .toast-notification.toast-error {
+            background: rgba(220, 53, 69, 0.85); /* Bootstrap danger color with alpha */
+            color: white;
+        }
+        
+        /* Optional: Style for icons inside toast */
+        .toast-icon {
+            margin-right: 8px;
+            font-size: 1.1em; /* Slightly larger icon */
+            vertical-align: middle; /* Align icon nicely with text */
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 添加进度条样式 */
+        .progress-container {
+            width: 100%;
+            background-color: #f1f1f1;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+/* ///////// */
+
+        /* Style for the new Cancel button in Create Post Modal */
+        .cancel-button {
+            float: right; /* Align with post button */
+            margin-right: 10px; /* Space between Cancel and Post */
+            background: #f0f0f0; /* Similar to secondary-btn */
+            color: #666;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .cancel-button:hover {
+            background: #e0e0e0;
+        }
+
+        /* --- Button Styles --- */
+
+        /* Primary Buttons (e.g., Join, Post, Main Actions) */
+        .join-button,
+        .post-button,
+        .primary-btn {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: white;
+            border: none;
+            padding: 8px 15px; /* Standardized padding */
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-size: 0.9rem; /* Standardized font size */
+            display: inline-flex; /* Use flex for alignment if needed */
+            align-items: center;
+            justify-content: center;
+            text-decoration: none; /* Ensure links styled as buttons don't have underline */
+        }
+
+        .join-button:hover,
+        .post-button:hover,
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 0, 224, 0.3);
+        }
+
+        /* Secondary Buttons (e.g., Generate, Cancel, Add Tag) */
+        .secondary-btn,
+        .cancel-button,
+        .add-tag {
+            background: #f0f0f0;
+            color: #666;
+            border: none;
+            padding: 8px 15px; /* Consistent padding */
+            border-radius: 20px;
+            font-size: 0.9rem; /* Consistent font size */
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .secondary-btn {
+             /* flex: 1; */ /* Removed flex:1, control width via container if needed */
+             margin-right: 10px; /* Keep margin for side-by-side placement like in chat */
+        }
+
+        .cancel-button {
+            /* float: right; */ /* Replaced by Flexbox */
+            margin-right: 10px; /* Keep space between Cancel and Post */
+            /* Removed redundant styles already covered by the group selector */
+        }
+        .cancel-button:hover,
+        .secondary-btn:hover,
+        .add-tag:hover {
+            background: #e0e0e0;
+        }
+
+        /* Specific Adjustments */
+        .post-button {
+             /* float: right; */ /* Replaced by Flexbox */
+             /* Adjusted padding/font-size are now in the grouped selector */
+        }
+
+        /* Disabled state for buttons */
+        .post-button:disabled,
+        .cancel-button:disabled { /* Although cancel is unlikely to be disabled, good practice */
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none; /* Remove shadow when disabled */
+            transform: none; /* Remove hover transform when disabled */
+        }
+
+        .add-tag {
+            padding: 5px 15px; /* Slightly smaller padding for tags */
+        }
+
+        .action-buttons { /* Container for buttons in chat */
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .modal-actions { /* New container for modal buttons */
+            display: flex;
+            justify-content: flex-end; /* Align buttons to the right */
+            margin-top: 20px; /* Space above the buttons */
+            padding-top: 10px; /* Optional: space within the container */
+            border-top: 1px solid #f0f0f0; /* Optional: separator line */
+        }
+
+    </style>
+</head>
+<body>
+    <!-- 科幻感光效 (Removed) -->
+    <!-- <div class="glow-effect glow-1 pulse-animation"></div> -->
+    <!-- <div class="glow-effect glow-2 pulse-animation"></div> -->
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="toast-notification">
+        <span class="toast-icon"></span> <!-- Icon placeholder -->
+        <span class="toast-message"></span> <!-- Message placeholder -->
+    </div>
+
+    <!-- 主页面 -->
+    <div id="main-page">
+        <!-- 头部 -->
+        <header class="app-header">
+            <div style="display: flex; align-items: center;">
+                <div class="header-back-button" onclick="history.back()" title="Go Back" tabindex="0">
+                    <span class="icon">⬅️</span>
+                </div>
+                <div class="app-title">Community</div>
+            </div>
+            <div class="header-icons">
+                <div class="header-icon" title="Notifications" tabindex="0"><span class="icon">🔔</span></div>
+                <div class="search-container">
+                    <span class="search-icon-btn"><span class="icon">🔍</span></span>
+                    <input type="search" class="search-input" placeholder="Search community...">
+                </div>
+                <div class="help-icon" title="Help Center" tabindex="0" id="helpIcon">
+                     <span class="icon">❓</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <!-- 搜索栏 -->
+            <div class="search-bar">
+                <div class="search-icon"><i class="fas fa-search"></i></div>
+                <input type="text" placeholder="Search posts, groups, or topics...">
+            </div>
+
+            <!-- 过滤标签 -->
+            <div class="filter-tabs">
+                <div class="filter-tab active">All Posts</div>
+                <div class="filter-tab">Study Groups</div>
+                <div class="filter-tab">Questions</div>
+                <div class="filter-tab">Resources</div>
+                <div class="filter-tab">Events</div>
+            </div>
+
+            <!-- 帖子列表 -->
+            <div class="post-card">
+                <div class="post-header">
+                    <div class="user-avatar">LZ</div>
+                    <div class="user-info">
+                        <div class="user-name">Li Zhang</div>
+                        <div class="post-time">Just now • Data Structures</div>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <div class="post-text">
+                        Hey everyone! I'm struggling with understanding the time complexity of Dijkstra's algorithm. If we use a priority queue, is it O(E log V) or O((V+E) log V)? Could someone explain the difference and which one is correct?
+                    </div>
+                    <img src="question.png" class="post-image" alt="Graph Algorithm">
+                </div>
+                <div class="post-actions">
+                    <div class="action-button" title="Like"><span class="action-icon"><i class="fas fa-thumbs-up"></i></span> 5</div>
+                    <div class="action-button" title="Comment"><span class="action-icon"><i class="fas fa-comment"></i></span> 3</div>
+                    <div class="action-button" title="Share"><span class="action-icon"><i class="fas fa-share"></i></span> Share</div>
+                </div>
+            </div>
+
+            <div class="post-card">
+                <div class="post-header">
+                    <div class="user-avatar">YW</div>
+                    <div class="user-info">
+                        <div class="user-name">Yang Wang</div>
+                        <div class="post-time">2 hours ago • Machine Learning</div>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <div class="post-text">
+                        I just completed a neural network project, implementing a simple image classifier using PyTorch. If anyone is interested in the code, I can share my GitHub repository link.
+                    </div>
+                    <div class="post-text" style="background: #f0f5ff; padding: 15px; border-radius: 10px; border-left: 4px solid #4a00e0;">
+                        <ul>
+                            <li>Used ResNet18 as the base model</li>
+                            <li>Achieved 92% accuracy on CIFAR-10 dataset</li>
+                            <li>Implemented data augmentation and early stopping</li>
+                            <li>Added training process visualization</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="post-actions">
+                    <div class="action-button" title="Like"><span class="action-icon"><i class="fas fa-thumbs-up"></i></span> 12</div>
+                    <div class="action-button" title="Comment"><span class="action-icon"><i class="fas fa-comment"></i></span> 5</div>
+                    <div class="action-button" title="Share"><span class="action-icon"><i class="fas fa-share"></i></span> Share</div>
+                </div>
+            </div>
+
+            <!-- 群组卡片 -->
+            <div class="group-card" id="open-group">
+                <div class="group-icon"><i class="fas fa-chart-bar"></i></div>
+                <div class="group-info">
+                    <div class="group-name">Differential Equations Group</div>
+                    <div class="group-stats">42 members • 15 posts this week</div>
+                </div>
+                <button class="join-button" id="join-group-btn">Join Group</button>
+            </div>
+
+            <div class="post-card">
+                <div class="post-header">
+                    <div class="user-avatar">JC</div>
+                    <div class="user-info">
+                        <div class="user-name">Jing Chen</div>
+                        <div class="post-time">Yesterday • Algorithms</div>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <div class="post-text">
+                        Many of you have been asking about the difference between dynamic programming and greedy algorithms. Here's a quick explanation:
+                    </div>
+                    <div class="post-text" style="background: #f0f5ff; padding: 15px; border-radius: 10px; border-left: 4px solid #4a00e0;">
+                        <ul>
+                            <li>Dynamic Programming: Solves problems by breaking them down into simpler subproblems and storing the results to avoid redundant calculations</li>
+                <li>Greedy Algorithms: Make locally optimal choices at each step with the hope of finding a global optimum</li>
+                <li>DP is used when we need the optimal solution and there are overlapping subproblems</li>
+                <li>Greedy is faster but doesn't always guarantee the optimal solution</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="post-actions">
+                    <div class="action-button" title="Like"><span class="action-icon"><i class="fas fa-thumbs-up"></i></span> 28</div>
+                    <div class="action-button" title="Comment"><span class="action-icon"><i class="fas fa-comment"></i></span> 7</div>
+                    <div class="action-button" title="Share"><span class="action-icon"><i class="fas fa-share"></i></span> Share</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部导航 -->
+        <nav class="bottom-nav">
+            <a href="home.html" class="nav-item">
+                <div class="nav-icon"><span class="icon">🏠</span></div>
+                <div>Home</div>
+            </a>
+            <a href="knowledgemap.html" class="nav-item">
+                <div class="nav-icon"><span class="icon">📚</span></div>
+                <div>Study Map</div>
+            </a>
+            <a href="mistake-book.html" class="nav-item">
+                <div class="nav-icon"><span class="icon">📝</span></div>
+                <div>Mistake Book</div>
+            </a>
+            <a href="community.html" class="nav-item active">
+                <div class="nav-icon"><span class="icon">👥</span></div>
+                <div>Community</div>
+            </a>
+            <a href="profile.html" class="nav-item">
+                <div class="nav-icon"><span class="icon">👤</span></div>
+                <div>Profile</div>
+            </a>
+        </nav>
+
+        <!-- 悬浮按钮 -->
+        <div class="fab-button" id="create-post-btn"><i class="fas fa-plus"></i></div>
+        <!-- Suggestion: Consider adding a keyboard shortcut (e.g., 'c') to open this modal -->
+    </div>
+
+    <!-- 群组详情页 -->
+    <div id="group-detail" class="group-detail">
+        <div class="group-header">
+            <div class="close-button" id="close-group"><i class="fas fa-times"></i></div>
+            <div class="group-title">Differential Equations Group</div>
+            <div class="group-description">Welcome to our Differential Equations study group. I'm Mei Li, a TA from the Math department. This group is created to help each other with challenging DE problems and solutions.</div>
+            <div class="group-members">
+                <div class="member-avatars">
+                    <div class="member-avatar">ML</div>
+                    <div class="member-avatar">JW</div>
+                    <div class="member-avatar">KL</div>
+                </div>
+                <span>42 members</span>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="chat-container">
+                <div class="message">
+                    <div class="message-avatar">ML</div>
+                    <div class="message-content">
+                        <div class="message-sender">Mei Li <span class="message-time">Yesterday, 16:30</span></div>
+                        <div class="message-text">
+                            Hi everyone! Welcome to our Differential Equations study group. I'm Mei Li, a TA from the Math department. This group is created to help each other with challenging DE problems and solutions.
+                        </div>
+                        <div class="reactions">
+                            <div class="reaction"><span class="reaction-icon"><i class="fas fa-thumbs-up"></i></span> 15</div>
+                            <div class="reaction"><span class="reaction-icon"><i class="fas fa-heart"></i></span> 8</div>
+                            <div class="reaction"><span class="reaction-icon"><i class="fas fa-sign-language"></i></span> 5</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="message">
+                    <div class="message-avatar">JW</div>
+                    <div class="message-content">
+                        <div class="message-sender">Jin Wang <span class="message-time">Yesterday, 17:15</span></div>
+                        <div class="message-text">
+                            Thank you, Professor Mei, for creating this group! I'm having some difficulties solving second-order differential equations, especially when the coefficients are variables. Are there any good methods to handle such problems?
+                        </div>
+                        <div class="reactions">
+                            <div class="reaction"><span class="reaction-icon"><i class="fas fa-thumbs-up"></i></span> 3</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="message ai-message">
+                    <div class="message-avatar">AI</div>
+                    <div class="message-content">
+                        <div class="message-sender">Learning Assistant <span class="message-time">Yesterday, 17:20</span></div>
+                        <div class="message-text">
+                            Regarding second-order differential equations with variable coefficients, here are several common solution methods:
+                            <ul>
+                                <li>Power Series Method: Particularly useful when coefficients are polynomials</li>
+                <li>Variable Substitution: Try to transform the equation into constant coefficient form</li>
+                <li>Special Functions: In some cases, solutions can be expressed using Bessel functions, Legendre polynomials, etc.</li>
+                <li>Numerical Methods: For complex equations, methods like Runge-Kutta can be used</li>
+                            </ul>
+                            I suggest first checking if the equation is in Euler-Cauchy form, as these types have standard solution methods.
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn primary-btn">View Detailed Tutorial</button>
+                            <button class="action-btn secondary-btn">Generate Practice Problems</button>
+                        </div>
+                        <div class="reactions">
+                            <div class="reaction"><span class="reaction-icon"><i class="fas fa-thumbs-up"></i></span> 12</div>
+                            <div class="reaction"><span class="reaction-icon"><i class="fas fa-hands-helping"></i></span> 7</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="message">
+                    <div class="message-avatar">ML</div>
+                    <div class="message-content">
+                        <div class="message-sender">Mei Li <span class="message-time">Today, 09:45</span></div>
+                        <div class="message-text">
+                            Great question, Jin! I'd like to add to what the AI assistant mentioned. For second-order differential equations with variable coefficients, we usually start by finding a particular solution, then use the method of variation of parameters. I'll be hosting a small online lecture at 3 PM today specifically to explain techniques for solving these types of problems. Interested students are welcome to join!
+                        </div>
+                        <div class="reactions">
+                            <div class="reaction"><span class="reaction-icon"><i class="fas fa-thumbs-up"></i></span> 12</div>
+                            <div class="reaction"><span class="reaction-icon"><i class="fas fa-hands-helping"></i></span> 7</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 创建新帖子页面 -->
+    <div id="create-post" class="create-post">
+        <div class="post-modal">
+            <div class="modal-header">
+                <div class="modal-title">Create New Post</div>
+                <div class="close-modal" id="close-post"><i class="fas fa-times"></i></div>
+            </div>
+            <div class="modal-content">
+                <div class="post-user">
+                    <div class="post-avatar">LX</div>
+                    <div class="post-user-info">
+                        <div class="post-user-name">Li Xiang</div>
+                        <div class="post-to">
+                            Post to: <span class="post-dropdown">Public Community ▼</span>
+                            <!-- Suggestion: Make this a dropdown for better option recognition -->
+                        </div>
+                    </div>
+                </div>
+
+                <textarea class="post-textarea" placeholder="Share your thoughts, questions, or resources..."></textarea>
+
+                <div class="tag-container">
+                    <div class="tag">Data Structures <span class="tag-close">✕</span></div>
+                    <div class="tag">Algorithms <span class="tag-close">✕</span></div>
+                    <div class="add-tag" title="Add a relevant tag">+ Add Tag</div>
+                    <!-- Suggestion: Implement tag auto-completion for efficiency -->
+                </div>
+
+                <div class="post-tools">
+                    <div class="tool-button" title="Add Image"><i class="fas fa-camera"></i></div>
+                    <div class="tool-button" title="Attach File"><i class="fas fa-paperclip"></i></div>
+                    <div class="tool-button" title="Create Poll"><i class="fas fa-poll"></i></div>
+                    <div class="tool-button" title="Add Link"><i class="fas fa-link"></i></div>
+                </div>
+
+                <!-- Progress Bar Placeholder -->
+                <div class="progress-container" style="display: none;">
+                     <div class="progress-bar" style="width: 0%;"></div>
+                </div>
+
+                <div class="ai-assist">
+                    <div class="ai-header">
+                        <span class="ai-icon"><i class="fas fa-robot"></i></span> AI Assistant Suggestions
+                    </div>
+                    <!-- Suggestion: Link list items below to detailed help articles if applicable -->
+                    <ul class="ai-list">
+                        <li>Adding specific code examples will make your question easier to answer</li>
+                        <li>Consider mentioning methods you've already tried to avoid duplicate suggestions</li>
+                        <li>Using tags will help relevant experts find your question</li>
+                    </ul>
+                </div>
+
+                <!-- Updated Button Container -->
+                <div class="modal-actions">
+                    <button class="cancel-button" id="cancel-post-btn">Cancel</button>
+                    <button class="post-button" id="submit-post-btn" disabled>Post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const toastNotification = document.getElementById('toast-notification');
+            const progressBarContainer = document.querySelector('.progress-container');
+            const progressBar = document.querySelector('.progress-bar');
+            const createPostModal = document.getElementById('create-post');
+            const postModalContent = createPostModal.querySelector('.post-modal');
+            const postTextarea = createPostModal.querySelector('.post-textarea');
+            const postButton = document.getElementById('submit-post-btn');
+            const cancelPostBtn = document.getElementById('cancel-post-btn');
+
+            // Function to show loading overlay
+            function showLoading() {
+                loadingOverlay.style.visibility = 'visible';
+                loadingOverlay.style.opacity = '1';
+            }
+
+            // Function to hide loading overlay
+            function hideLoading() {
+                loadingOverlay.style.visibility = 'hidden';
+                loadingOverlay.style.opacity = '0';
+            }
+
+            // Function to show toast notification (Enhanced for error/success)
+            function showToast(message, isError = false, duration = 3000) {
+                const toastMessageElement = toastNotification.querySelector('.toast-message');
+                const toastIconElement = toastNotification.querySelector('.toast-icon');
+
+                if (toastMessageElement) {
+                    toastMessageElement.textContent = message;
+                } else {
+                     toastNotification.textContent = message; // Fallback
+                }
+
+                if (isError) {
+                    toastNotification.classList.add('toast-error');
+                    if (toastIconElement) {
+                       toastIconElement.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
+                    }
+                } else {
+                    toastNotification.classList.remove('toast-error');
+                     if (toastIconElement) {
+                       toastIconElement.innerHTML = '<i class="fas fa-check-circle"></i>';
+                    }
+                }
+
+                toastNotification.style.opacity = '1';
+                setTimeout(() => {
+                    toastNotification.style.opacity = '0';
+                    // Consider removing class after hiding if needed
+                    // toastNotification.classList.remove('toast-error');
+                }, duration);
+            }
+
+            // Function to show and update progress bar (example)
+            function simulateProgress() {
+                progressBarContainer.style.display = 'block';
+                let width = 0;
+                const interval = setInterval(() => {
+                    if (width >= 100) {
+                        clearInterval(interval);
+                         progressBarContainer.style.display = 'none'; // Hide after completion
+                         progressBar.style.width = '0%'; // Reset
+                    } else {
+                        width += 10;
+                        progressBar.style.width = width + '%';
+                    }
+                }, 200);
+            }
+
+            // 打开群组详情
+            document.getElementById('open-group').addEventListener('click', function() {
+                document.getElementById('main-page').style.display = 'none';
+                document.getElementById('group-detail').style.display = 'block';
+            });
+            
+            // 关闭群组详情
+            document.getElementById('close-group').addEventListener('click', function() {
+                document.getElementById('main-page').style.display = 'block';
+                document.getElementById('group-detail').style.display = 'none';
+            });
+            
+            // 打开创建帖子页面
+            document.getElementById('create-post-btn').addEventListener('click', function() {
+                createPostModal.style.display = 'block';
+            });
+            
+            // 关闭创建帖子页面 - Close Button
+            document.getElementById('close-post').addEventListener('click', function() {
+                closeCreatePostModal();
+            });
+            
+            // 关闭创建帖子页面 - Cancel Button
+            if (cancelPostBtn) {
+                cancelPostBtn.addEventListener('click', closeCreatePostModal);
+            }
+
+            // 关闭创建帖子页面 - Click outside modal
+            createPostModal.addEventListener('click', function(event) {
+                // Check if the click is directly on the overlay (createPostModal) and not on the modal content itself
+                if (event.target === createPostModal) {
+                    closeCreatePostModal();
+                }
+            });
+
+            // Prevent clicks inside the modal content from closing the modal
+            if (postModalContent) {
+                postModalContent.addEventListener('click', function(event) {
+                    event.stopPropagation(); // Stop the click event from bubbling up to the overlay
+                });
+            }
+
+            // 过滤标签点击效果
+            const filterTabs = document.querySelectorAll('.filter-tab');
+            filterTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    filterTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // 添加点击波纹效果
+            const cards = document.querySelectorAll('.post-card, .group-card');
+            cards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (this.id !== 'open-group') {
+                        const rect = this.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        
+                        const ripple = document.createElement('div');
+                        ripple.style.position = 'absolute';
+                        ripple.style.width = '1px';
+                        ripple.style.height = '1px';
+                        ripple.style.background = 'rgba(255, 255, 255, 0.4)';
+                        ripple.style.borderRadius = '50%';
+                        ripple.style.transform = 'translate(-50%, -50%)';
+                        ripple.style.left = x + 'px';
+                        ripple.style.top = y + 'px';
+                        ripple.style.animation = 'ripple 0.6s linear';
+                        ripple.style.pointerEvents = 'none';
+                        
+                        this.style.position = 'relative';
+                        this.style.overflow = 'hidden';
+                        this.appendChild(ripple);
+                        
+                        setTimeout(() => {
+                            ripple.remove();
+                        }, 600);
+                    }
+                });
+            });
+            
+            // 添加点赞功能
+            const actionButtons = document.querySelectorAll('.action-button');
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const icon = this.querySelector('.action-icon');
+                    if (icon.textContent === '👍') {
+                        const count = parseInt(this.textContent.replace('👍', '').trim());
+                        this.innerHTML = `<span class="action-icon">👍</span> ${count + 1}`;
+                        this.style.color = '#4a00e0';
+                    }
+                });
+            });
+            
+            // 添加标签删除功能
+            const tagCloseButtons = document.querySelectorAll('.tag-close');
+            tagCloseButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    this.parentElement.remove();
+                });
+            });
+            
+            // 添加标签功能
+            document.querySelector('.add-tag').addEventListener('click', function() {
+                const tagContainer = document.querySelector('.tag-container');
+                const newTag = document.createElement('div');
+                newTag.className = 'tag';
+                newTag.innerHTML = '新标签 <span class="tag-close">✕</span>';
+                
+                tagContainer.insertBefore(newTag, this);
+                
+                const closeButton = newTag.querySelector('.tag-close');
+                closeButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    this.parentElement.remove();
+                });
+            });
+
+            // Simulate "Join Group" action with feedback
+            const joinGroupBtn = document.getElementById('join-group-btn');
+            if (joinGroupBtn) {
+                joinGroupBtn.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent triggering group card click
+                    showLoading();
+                    const button = this; // Store reference
+                    button.disabled = true; // Disable button immediately
+
+                    // Simulate network request
+                    setTimeout(() => {
+                        hideLoading();
+                        const success = Math.random() > 0.3; // Simulate 70% success rate
+
+                        if (success) {
+                            showToast('Successfully joined the group!', false); // isError = false
+                            button.textContent = 'Joined';
+                            button.style.background = '#ccc';
+                            // Keep button disabled as it's joined
+                        } else {
+                            showToast('Failed to join group. Please try again later.', true); // isError = true
+                            button.disabled = false; // Re-enable button on failure to allow retry
+                        }
+                    }, 1500); // Simulate 1.5 second delay
+                });
+            }
+
+             // Simulate "Post" action with feedback
+            if (postButton) {
+                 postButton.addEventListener('click', function() {
+                     showLoading();
+                     simulateProgress(); // Show progress bar during posting
+                    const button = this; // Store reference
+                    button.disabled = true; // Disable during submission
+
+                     // Simulate network request for posting
+                     setTimeout(() => {
+                         hideLoading();
+                         const success = Math.random() > 0.3; // Simulate 70% success rate
+
+                         if (success) {
+                             closeCreatePostModal(true); // Force close modal on success
+                             showToast('Post created successfully!', false);
+                             // State reset happens inside closeCreatePostModal now
+                         } else {
+                             showToast('Error creating post. Please check content or try again.', true);
+                              button.disabled = false; // Re-enable button on failure
+                             // Don't close modal on failure
+                         }
+                     }, 2500); // Simulate 2.5 second delay (longer due to progress bar)
+                 });
+             }
+
+            // 关闭创建帖子页面 - Function with Confirmation
+            function closeCreatePostModal(forceClose = false) {
+                 // Check if there is text in the textarea AND we are not force closing
+                 if (!forceClose && postTextarea.value.trim() !== '') {
+                     // Ask for confirmation
+                     if (!confirm('You have unsaved changes. Are you sure you want to close and discard them?')) {
+                         return; // Stop closing if the user cancels
+                     }
+                 }
+                 // If textarea is empty or user confirmed, proceed to close
+                 createPostModal.style.display = 'none';
+                 // Reset the modal state for next time
+                 postTextarea.value = ''; // Clear textarea
+                 postButton.disabled = true; // Disable post button again
+                 // Reset tags or other fields if necessary here
+            }
+
+            // Enable/Disable Post button based on textarea content
+            if (postTextarea && postButton) {
+                 postTextarea.addEventListener('input', function() {
+                     postButton.disabled = postTextarea.value.trim() === '';
+                 });
+
+                 // Add Ctrl+Enter / Cmd+Enter shortcut to submit post
+                 postTextarea.addEventListener('keydown', function(event) {
+                    // Check for Ctrl+Enter or Cmd+Enter (metaKey for Mac)
+                    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+                        // Check if the post button is enabled
+                        if (!postButton.disabled) {
+                            event.preventDefault(); // Prevent default Enter behavior (like adding a new line)
+                            postButton.click(); // Simulate clicking the post button
+                        }
+                    }
+                 });
+             }
+
+             // Add Esc key listener to close the create post modal
+             document.addEventListener('keydown', function(event) {
+                 if (event.key === 'Escape') {
+                     // Check if the create post modal is currently displayed
+                     if (createPostModal.style.display === 'block') {
+                         closeCreatePostModal();
+                     }
+                     // Potential future enhancement: close group detail view if it behaves like a modal
+                 }
+             });
+        });
+        
+        // 添加波纹动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                0% {
+                    width: 0;
+                    height: 0;
+                    opacity: 0.5;
+                }
+                100% {
+                    width: 500px;
+                    height: 500px;
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

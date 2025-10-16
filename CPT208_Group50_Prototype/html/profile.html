@@ -1,0 +1,1955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile & Learning Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 70px;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        /* 头部样式 - Combine profile-header and app-header styles */
+        .app-header { /* Renamed from profile-header */
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: white;
+            padding: 15px; /* 统一padding */
+            display: flex; /* Changed from text-align: center */
+            justify-content: space-between;
+            align-items: center;
+            position: sticky; /* Added */
+            top: 0; /* Added */
+            z-index: 100; /* Added */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            height: 60px; /* 添加固定高度 */
+        }
+        
+        .app-title { /* New class for title */
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            display: inline-block; 
+        }
+
+        .header-icons {
+            display: flex;
+            align-items: center; 
+        }
+        
+        .header-icon {
+            margin-left: 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .header-icon:hover {
+            transform: scale(1.2);
+        }
+
+        .settings-icon { /* Keep settings icon specific styles if needed */
+             position: relative; /* Changed from fixed */
+             top: 0;
+             right: 0;
+             font-size: 1.2rem;
+             cursor: pointer;
+             transition: transform 0.3s ease;
+             z-index: 101;
+             width: auto;
+             height: auto;
+             background: none;
+             border-radius: 0;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             margin-left: 15px; /* Add margin like other icons */
+        }
+        
+        .settings-icon:hover {
+            transform: scale(1.1); /* Changed */
+            background: none;
+        }
+
+        /* Added from home.html */
+        .header-back-button {
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-right: 15px;
+            color: white;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+        .header-back-button:hover {
+            transform: scale(1.1);
+        }
+        .icon {
+            display: inline-block;
+            width: 1.2em;
+            height: 1.2em;
+            text-align: center;
+            line-height: 1.2em;
+        }
+        .header-icon .icon, .header-back-button .icon, .settings-icon .icon {
+            font-size: 1.2rem;
+        }
+        .header-back-button .icon {
+            font-size: 1.5rem;
+        }
+        .search-container {
+            position: relative;
+            margin-left: 15px;
+        }
+        .search-input {
+            padding: 6px 10px 6px 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+            font-size: 0.9rem;
+            width: 150px;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .search-input:focus {
+            background-color: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.8);
+            width: 200px;
+            outline: none;
+        }
+        .search-icon-btn {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            pointer-events: none;
+        }
+        .help-icon {
+            margin-left: 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.3s ease, color 0.3s ease;
+            color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+        }
+        .help-icon:hover {
+            transform: scale(1.1);
+            color: white;
+        }
+        .help-icon .icon {
+            margin-right: 0px; /* Adjusted */
+        }
+        button:focus-visible, a:focus-visible, .header-icon:focus-visible, .header-back-button:focus-visible, .nav-item:focus-visible, .settings-icon:focus-visible {
+            outline: 2px solid #4a00e0;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 4px rgba(74, 0, 224, 0.2);
+            border-radius: 4px; 
+        }
+        
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            border: 3px solid white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            background: #f0f0f0;
+        }
+        
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .profile-info {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+        
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        /* 容器样式 */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* 卡片样式 */
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .view-all {
+            color: #4a00e0;
+            font-size: 0.8rem;
+            text-decoration: none;
+            transition: text-decoration 0.3s ease;
+        }
+        
+        .view-all:hover {
+            text-decoration: underline;
+        }
+        
+        /* 徽章样式 */
+        .badges-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        
+        .badge-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 20%;
+            margin-bottom: 15px;
+        }
+        
+        .badge-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 1.5rem;
+            color: #4a00e0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .badge-name {
+            font-size: 0.7rem;
+            text-align: center;
+            color: #666;
+        }
+        
+        /* 菜单项样式 */
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        
+        .menu-item:hover {
+            background-color: #f9f9ff;
+        }
+        
+        .menu-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: rgba(74, 0, 224, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            color: #4a00e0;
+            font-size: 1.2rem;
+        }
+        
+        .menu-text {
+            flex: 1;
+        }
+        
+        .menu-title {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .menu-subtitle {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 3px;
+        }
+        
+        .menu-arrow {
+            color: #ccc;
+            font-size: 1.2rem;
+            margin-left: 10px;
+        }
+        
+        .badge-new {
+            background: #4a00e0;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 10px;
+        }
+        
+        .logout-btn {
+            display: inline-block;
+            text-align: center;
+            color: white;
+            padding: 8px 20px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 20px;
+            border-radius: 20px;
+            background: linear-gradient(90deg, #e53935, #c62828);
+            border: none;
+            box-shadow: 0 4px 8px rgba(229, 57, 53, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: auto;
+            min-width: 120px;
+        }
+        
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(229, 57, 53, 0.4);
+            background: linear-gradient(90deg, #d32f2f, #b71c1c);
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #888;
+            text-decoration: none;
+            font-size: 0.7rem;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-item.active {
+            color: #4a00e0;
+        }
+        
+        .nav-icon {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        /* 学习报告页面样式 */
+        .report-header {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        .back-btn {
+            margin-right: 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .report-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        
+        .report-actions {
+            position: absolute;
+            right: 15px;
+            display: flex;
+        }
+        
+        .action-icon {
+            margin-left: 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .report-subtitle {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        .report-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .report-section-title {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-box {
+            background: #f9f9ff;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-box-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #4a00e0;
+            margin-bottom: 5px;
+        }
+        
+        .stat-box-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .chart-container {
+            height: 200px;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .chart-bg {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #eee;
+        }
+        
+        .chart-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to top, rgba(74, 0, 224, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+            clip-path: polygon(0 100%, 10% 80%, 20% 90%, 30% 70%, 40% 85%, 50% 60%, 60% 70%, 70% 50%, 80% 65%, 90% 40%, 100% 55%, 100% 100%);
+        }
+        
+        .chart-path {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            border-bottom: 2px solid #4a00e0;
+            clip-path: polygon(0 100%, 10% 80%, 20% 90%, 30% 70%, 40% 85%, 50% 60%, 60% 70%, 70% 50%, 80% 65%, 90% 40%, 100% 55%, 100% 100%);
+        }
+        
+        .chart-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        
+        .chart-label {
+            font-size: 0.7rem;
+            color: #888;
+            text-align: center;
+            width: 14.28%;
+        }
+        
+        .time-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        
+        .time-stat {
+            text-align: center;
+        }
+        
+        .time-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #4a00e0;
+        }
+        
+        .time-label {
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .completion-chart {
+            width: 150px;
+            height: 150px;
+            margin: 20px auto;
+            position: relative;
+            border-radius: 50%;
+            background: conic-gradient(
+                #4a00e0 0% 25%,
+                #6c5ce7 25% 45%,
+                #00b894 45% 65%,
+                #fdcb6e 65% 85%,
+                #d63031 85% 100%
+            );
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .completion-inner {
+            width: 110px;
+            height: 110px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .completion-percent {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4a00e0;
+        }
+        
+        .completion-label {
+            font-size: 0.7rem;
+            color: #888;
+        }
+        
+        .completion-legend {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            width: 50%;
+            margin-bottom: 10px;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            margin-right: 8px;
+        }
+        
+        .legend-text {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .achievement-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .achievement-item:last-child {
+            border-bottom: none;
+        }
+        
+        .achievement-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: rgba(74, 0, 224, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            color: #4a00e0;
+            font-size: 1.2rem;
+        }
+        
+        .achievement-content {
+            flex: 1;
+        }
+        
+        .achievement-title {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 3px;
+        }
+        
+        .achievement-desc {
+            font-size: 0.8rem;
+            color: #888;
+        }
+        
+        .achievement-rating {
+            color: #fdcb6e;
+            font-size: 1.2rem;
+            margin-left: 10px;
+        }
+        
+        .ai-suggestion-item {
+            display: flex;
+            padding: 15px;
+            background: #f9f9ff;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .suggestion-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: rgba(74, 0, 224, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            color: #4a00e0;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .suggestion-content {
+            flex: 1;
+        }
+        
+        .suggestion-title {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .suggestion-desc {
+            font-size: 0.8rem;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .feedback-btn {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(74, 0, 224, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .feedback-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(74, 0, 224, 0.4);
+        }
+        
+        /* 添加科幻感的元素 */
+        .glow-effect {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(74, 0, 224, 0.05) 0%, rgba(255, 255, 255, 0) 70%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .glow-1 {
+            top: -100px;
+            right: -100px;
+        }
+        
+        .glow-2 {
+            bottom: 30%;
+            left: -150px;
+        }
+        
+        /* 添加动画效果 */
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 0.5; }
+        }
+        
+        .pulse-animation {
+            animation: pulse 4s infinite ease-in-out;
+        }
+        
+        /* 添加滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #7928ca, #3700b3);
+        }
+        
+        .plan-info-text {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .history-link {
+            display: inline-block;
+            color: #4a00e0;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            text-decoration: none;
+            transition: text-decoration 0.3s ease;
+        }
+        
+        .history-link:hover {
+            text-decoration: underline;
+        }
+        
+        .settings-form {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            display: none;
+            position: fixed;
+            top: 55px;
+            right: 15px;
+            width: 280px;
+            z-index: 100;
+        }
+        
+        .settings-form:before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            right: 15px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid white;
+        }
+        
+        .settings-form-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #333;
+        }
+        
+        .settings-form-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        .settings-form-btn {
+            background: #4a00e0;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        
+        .settings-form-btn.secondary {
+            background: #f0f0f0;
+            color: #333;
+            margin-right: 10px;
+        }
+        
+        /* 错误提示样式 */
+        .error-message {
+            color: #e53935;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .error-message:before {
+            content: "⚠️";
+            margin-right: 5px;
+        }
+        
+        .success-message {
+            color: #4CAF50;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .success-message:before {
+            content: "✓";
+            margin-right: 5px;
+        }
+        
+        /* 表单输入样式 */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-input:focus {
+            border-color: #4a00e0;
+            outline: none;
+        }
+        
+        .form-input.error {
+            border-color: #e53935;
+        }
+        
+        /* 帮助中心样式 */
+        .help-search-container {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+        }
+        
+        .help-search-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 1rem;
+        }
+        
+        .search-btn {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 0 25px 25px 0;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .search-btn:hover {
+            background: linear-gradient(90deg, #7928ca, #3700b3);
+        }
+        
+        .help-icon {
+            margin-left: 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.3s ease, color 0.3s ease;
+            color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+        }
+        
+        .help-icon:hover {
+            transform: scale(1.1);
+            color: white;
+        }
+        
+        .help-icon .icon {
+            margin-right: 0px; /* Adjusted */
+        }
+        
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 10px;
+        }
+        
+        .quick-link-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f9f9ff;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .quick-link-item:hover {
+            transform: translateY(-2px);
+        }
+        
+        .quick-link-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+        
+        .quick-link-text {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .faq-container {
+            padding: 10px;
+        }
+        
+        .faq-item {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+        }
+        
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        
+        .faq-question {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .faq-answer {
+            font-size: 0.9rem;
+            color: #666;
+            display: none;
+            padding-top: 10px;
+        }
+        
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+        
+        .guide-container {
+            padding: 10px;
+        }
+        
+        .guide-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f9f9ff;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .guide-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .guide-icon {
+            font-size: 1.5rem;
+            margin-right: 15px;
+        }
+        
+        .guide-content {
+            flex: 1;
+        }
+        
+        .guide-title {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .guide-desc {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .support-container {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .support-text {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .support-btn {
+            padding: 12px 30px;
+            background: #4a00e0;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+        
+        .support-btn:hover {
+            transform: translateY(-2px);
+            background: #3700b3;
+        }
+    </style>
+</head>
+<body>
+    <!-- 科幻感光效 -->
+    <div class="glow-effect glow-1 pulse-animation"></div>
+    <div class="glow-effect glow-2 pulse-animation"></div>
+
+    <!-- 个人资料页面 -->
+    <div id="profilePage" class="page active">
+        <!-- 头部 - Modified -->
+        <header class="app-header"> <!-- Renamed class -->
+             <div style="display: flex; align-items: center;">
+                 <div class="header-back-button" onclick="history.back()" title="Go Back" tabindex="0">
+                     <span class="icon">⬅️</span>
+                 </div>
+                 <div class="app-title">Profile</div> <!-- Added title class -->
+             </div>
+             <div class="header-icons">
+                 <div class="header-icon" title="Notifications" tabindex="0"><span class="icon">🔔</span></div>
+                 <div class="search-container">
+                     <span class="search-icon-btn"><span class="icon">🔍</span></span>
+                     <input type="search" class="search-input" placeholder="Search function">
+                 </div>
+                 <div class="help-icon" title="Help Center" tabindex="0" id="helpIcon">
+                     <span class="icon">❓</span>
+                 </div>
+            </div>
+        </header>
+
+        <!-- Original Profile Header Content (moved outside header) -->
+        <div class="profile-content-header" style="background: linear-gradient(90deg, #8e2de2, #4a00e0); color: white; padding: 10px 15px 25px; text-align: center; border-radius: 0 0 20px 20px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+            <div class="profile-avatar">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Li Xiang">
+            </div>
+            <div class="profile-name">Li Xiang</div>
+            <div class="profile-info">Information Management · Sophomore</div>
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <div class="stat-value">120</div>
+                    <div class="stat-label">Study Days</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">1024</div>
+                    <div class="stat-label">Completed Exercises</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">Study Badges</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- 学习统计 -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Learning Statistics</div>
+                    <a href="#" class="view-all">View Details</a>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; text-align: center;">
+                    <div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #4a00e0;">86%</div>
+                        <div style="font-size: 0.8rem; color: #888;">Accuracy</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #4a00e0;">4.2h</div>
+                        <div style="font-size: 0.8rem; color: #888;">Weekly Study Time</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #4a00e0;">42</div>
+                        <div style="font-size: 0.8rem; color: #888;">Consecutive Check-ins</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <div style="font-size: 0.8rem; color: #888; margin-bottom: 5px;">Learning Progress</div>
+                    <div style="height: 8px; background: #f0f0f0; border-radius: 4px; overflow: hidden;">
+                        <div style="height: 100%; width: 75%; background: linear-gradient(90deg, #8e2de2, #4a00e0); border-radius: 4px;"></div>
+                    </div>
+                    <div style="text-align: right; font-size: 0.8rem; color: #888; margin-top: 5px;">75%</div>
+                </div>
+            </div>
+            
+            <!-- 我的徽章 -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">My Badges</div>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                
+                <div class="badges-container">
+                    <div class="badge-item">
+                        <div class="badge-icon">📚</div>
+                        <div class="badge-name">Diligent Learner</div>
+                    </div>
+                    <div class="badge-item">
+                        <div class="badge-icon">⚡</div>
+                        <div class="badge-name">Check-in Master</div>
+                    </div>
+                    <div class="badge-item">
+                        <div class="badge-icon">🧠</div>
+                        <div class="badge-name">Algorithm Expert</div>
+                    </div>
+                    <div class="badge-item">
+                        <div class="badge-icon">⭐</div>
+                        <div class="badge-name">Outstanding Student</div>
+                    </div>
+                    <div class="badge-item locked-badge">
+                        <div class="badge-icon">🔒</div>
+                        <div class="badge-name">Locked</div>
+                        <div class="badge-unlock-info" style="display: none; font-size: 0.7rem; color: #4a00e0; text-align: center; margin-top: 5px;">Complete 5 more courses to unlock</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 菜单项 -->
+            <div class="card">
+                <div class="menu-item">
+                    <div class="menu-icon">📋</div>
+                    <div class="menu-text">
+                        <div class="menu-title">My Courses</div>
+                        <div class="menu-subtitle">3 Courses Enrolled</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-icon">👥</div>
+                    <div class="menu-text">
+                        <div class="menu-title">Study Groups</div>
+                        <div class="menu-subtitle">3 Groups Joined</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-icon">🔖</div>
+                    <div class="menu-text">
+                        <div class="menu-title">My Favorites</div>
+                        <div class="menu-subtitle">28 Saved Resources</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-icon">📊</div>
+                    <div class="menu-text">
+                        <div class="menu-title">Learning History</div>
+                        <div class="menu-subtitle">Recent Learning Records</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+                
+                <div class="menu-item" id="learningReportBtn">
+                    <div class="menu-icon">📈</div>
+                    <div class="menu-text">
+                        <div class="menu-title">Learning Report</div>
+                        <div class="menu-subtitle">View Learning Analysis & Progress</div>
+                    </div>
+                    <span class="badge-new">New</span>
+                    <div class="menu-arrow">›</div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-icon">🔔</div>
+                    <div class="menu-text">
+                        <div class="menu-title">Notification Settings</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-icon">🔒</div>
+                    <div class="menu-text">
+                        <div class="menu-title">Privacy Settings</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-icon">❓</div>
+                    <div class="menu-text">
+                        <div class="menu-title">Help & Documentation</div>
+                        <div class="menu-subtitle">FAQs, Guides & Support</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-icon">ℹ️</div>
+                    <div class="menu-text">
+                        <div class="menu-title">About Us</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+            
+            <a href="#" class="logout-btn" id="logoutBtn">Logout</a>
+        </div>
+    </div>
+    
+    <!-- 学习报告页面 -->
+    <div id="reportPage" class="page">
+        <header class="app-header"> <!-- Use consistent header -->
+             <div style="display: flex; align-items: center;">
+                 <div class="header-back-button" onclick="document.getElementById('reportPage').classList.remove('active'); document.getElementById('profilePage').classList.add('active'); window.scrollTo(0, 0);" title="Back to Profile" tabindex="0">
+                     <span class="icon">⬅️</span>
+                 </div>
+                 <div class="app-title">Learning Report</div> 
+             </div>
+             <div class="header-icons">
+                 <div class="header-icon" title="Notifications" tabindex="0"><span class="icon">🔔</span></div>
+                 <div class="search-container">
+                     <span class="search-icon-btn"><span class="icon">🔍</span></span>
+                     <input type="search" class="search-input" placeholder="Search function">
+                 </div>
+                 <div class="help-icon" title="Help Center" tabindex="0" id="helpIconReport">
+                     <span class="icon">❓</span>
+                 </div>
+            </div>
+        </header>
+
+        <!-- Original report header content (date) moved below -->
+        <div class="report-date-info" style="padding: 10px 15px; background: #f0f0f0; font-size: 0.8rem; color: #555;">
+             Report Period: Mar 01 - Mar 15, 2023
+        </div>
+
+        <div class="container">
+            <!-- 学习概览 -->
+            <div class="report-card">
+                <div class="report-section-title">Study Overview</div>
+                
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-box-value">42.5</div>
+                        <div class="stat-box-label">Total Hours</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-value">15</div>
+                        <div class="stat-box-label">Completed Courses</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-value">8</div>
+                        <div class="stat-box-label">Active Days</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 学习时间分析 -->
+            <div class="report-card">
+                <div class="report-section-title">Study Time Analysis</div>
+                
+                <div class="chart-container">
+                    <div class="chart-bg"></div>
+                    <div class="chart-line"></div>
+                    <div class="chart-path"></div>
+                </div>
+                
+                <div class="chart-labels">
+                    <div class="chart-label">Mon</div>
+                    <div class="chart-label">Tue</div>
+                    <div class="chart-label">Wed</div>
+                    <div class="chart-label">Thu</div>
+                    <div class="chart-label">Fri</div>
+                    <div class="chart-label">Sat</div>
+                    <div class="chart-label">Sun</div>
+                </div>
+                
+                <div class="time-stats">
+                    <div class="time-stat">
+                        <div class="time-value">8.5</div>
+                        <div class="time-label">Morning Hours</div>
+                    </div>
+                    <div class="time-stat">
+                        <div class="time-value">20.2</div>
+                        <div class="time-label">Afternoon Hours</div>
+                    </div>
+                    <div class="time-stat">
+                        <div class="time-value">13.8</div>
+                        <div class="time-label">Evening Hours</div>
+                    </div>
+                </div>
+            </div>
+            
+                        <!-- 课程完成状态 -->
+                        <div class="report-card">
+                            <div class="report-section-title">Course Completion Status</div>
+                            
+                            <div class="completion-chart">
+                                <div class="completion-inner">
+                                    <div class="completion-percent">67%</div>
+                                    <div class="completion-label">Overall</div>
+                                </div>
+                            </div>
+                            
+                            <div class="completion-legend">
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #4a00e0;"></div>
+                                    <div class="legend-text">Data Structures (25%)</div>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #6c5ce7;"></div>
+                                    <div class="legend-text">Algorithms (20%)</div>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #00b894;"></div>
+                                    <div class="legend-text">Mathematics (20%)</div>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #fdcb6e;"></div>
+                                    <div class="legend-text">Programming (20%)</div>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #d63031;"></div>
+                                    <div class="legend-text">Others (15%)</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 学习成就 -->
+                        <div class="report-card">
+                            <div class="report-section-title">Learning Achievements</div>
+                            
+                            <div class="achievement-rating" style="text-align: right; margin-bottom: 10px;">★★★★☆</div>
+                            
+                            <div class="achievement-item">
+                                <div class="achievement-icon">🏆</div>
+                                <div class="achievement-content">
+                                    <div class="achievement-title">Completed Data Structures Course</div>
+                                    <div class="achievement-desc">Finished all modules with an average score of 92%</div>
+                                </div>
+                            </div>
+                            
+                            <div class="achievement-item">
+                                <div class="achievement-icon">🔍</div>
+                                <div class="achievement-content">
+                                    <div class="achievement-title">Solved 50 Algorithm Problems</div>
+                                    <div class="achievement-desc">Completed challenges across different difficulty levels</div>
+                                </div>
+                            </div>
+                            
+                            <div class="achievement-item">
+                                <div class="achievement-icon">📊</div>
+                                <div class="achievement-content">
+                                    <div class="achievement-title">Completed TCP/IP Network Learning</div>
+                                    <div class="achievement-desc">Mastered fundamental networking concepts</div>
+                                </div>
+                            </div>
+                            
+                            <div class="achievement-item">
+                                <div class="achievement-icon">🚀</div>
+                                <div class="achievement-content">
+                                    <div class="achievement-title">Built First Full-Stack Project</div>
+                                    <div class="achievement-desc">Created a functional web application with database integration</div>
+                                </div>
+                            </div>
+                            
+                            <div class="achievement-item">
+                                <div class="achievement-icon">📝</div>
+                                <div class="achievement-content">
+                                    <div class="achievement-title">Submitted Technical Paper</div>
+                                    <div class="achievement-desc">Research on optimized sorting algorithms</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- AI学习建议 -->
+                        <div class="report-card">
+                            <div class="report-section-title">AI Learning Suggestions</div>
+                            
+                            <div class="ai-suggestion-item">
+                                <div class="suggestion-icon">🧩</div>
+                                <div class="suggestion-content">
+                                    <div class="suggestion-title">Increase Algorithm Complexity</div>
+                                    <div class="suggestion-desc">Based on your performance, you're ready to tackle more advanced algorithm problems. Try focusing on dynamic programming and graph algorithms.</div>
+                                </div>
+                            </div>
+                            
+                            <div class="ai-suggestion-item">
+                                <div class="suggestion-icon">📚</div>
+                                <div class="suggestion-content">
+                                    <div class="suggestion-title">Refresh Math Foundations</div>
+                                    <div class="suggestion-desc">Your progress in advanced topics could benefit from revisiting calculus and linear algebra fundamentals.</div>
+                                </div>
+                            </div>
+                            
+                            <div class="ai-suggestion-item">
+                                <div class="suggestion-icon">💻</div>
+                                <div class="suggestion-content">
+                                    <div class="suggestion-title">Try Practical Project Applications</div>
+                                    <div class="suggestion-desc">Apply your theoretical knowledge to real-world projects to strengthen understanding and retention.</div>
+                                </div>
+                            </div>
+                            
+                            <p class="plan-info-text">Based on your learning patterns and progress, our AI can generate a customized study plan to help you improve your skills efficiently. The plan includes recommended resources, practice exercises, and a weekly schedule.</p>
+                            
+                            <button class="feedback-btn" id="generatePlanBtn">Generate Personalized Study Plan</button>
+                            <p id="planStatusMsg" style="text-align: center; margin-top: 10px; color: #4a00e0; font-size: 0.9rem;"></p>
+                            <div id="planHistoryContainer" style="text-align: center; display: none;">
+                                <a href="#" class="history-link" id="viewPreviousPlans">View Previous Plans</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 底部导航 -->
+                <nav class="bottom-nav">
+                    <a href="home.html" class="nav-item">
+                        <div class="nav-icon"><span class="icon">🏠</span></div>
+                        <div>Home</div>
+                    </a>
+                    <a href="knowledgemap.html" class="nav-item">
+                        <div class="nav-icon"><span class="icon">📚</span></div>
+                        <div>Study Map</div>
+                    </a>
+                    <a href="mistake-book.html" class="nav-item">
+                        <div class="nav-icon"><span class="icon">📝</span></div>
+                        <div>Mistake Book</div>
+                    </a>
+                    <a href="community.html" class="nav-item">
+                        <div class="nav-icon"><span class="icon">👥</span></div>
+                        <div>Community</div>
+                    </a>
+                    <a href="profile.html" class="nav-item active">
+                        <div class="nav-icon"><span class="icon">👤</span></div>
+                        <div>Profile</div>
+                    </a>
+                </nav>
+            
+                <script>
+                    // 页面切换功能
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const profilePage = document.getElementById('profilePage');
+                        const reportPage = document.getElementById('reportPage');
+                        const learningReportBtn = document.getElementById('learningReportBtn');
+                        const backToProfileBtn = document.getElementById('backToProfileBtn');
+                        
+                        // 点击学习报告按钮，显示报告页面
+                        learningReportBtn.addEventListener('click', function() {
+                            profilePage.classList.remove('active');
+                            reportPage.classList.add('active');
+                            window.scrollTo(0, 0); // 滚动到顶部
+                        });
+                        
+                        // 点击返回按钮，返回个人资料页面
+                        backToProfileBtn.addEventListener('click', function() {
+                            reportPage.classList.remove('active');
+                            profilePage.classList.add('active');
+                            window.scrollTo(0, 0); // 滚动到顶部
+                        });
+                        
+                        // 添加科幻感的动态效果
+                        document.addEventListener('mousemove', function(e) {
+                            const glowEffects = document.querySelectorAll('.glow-effect');
+                            const x = e.clientX;
+                            const y = e.clientY;
+                            
+                            // 让第一个光效跟随鼠标移动
+                            glowEffects[0].style.top = (y - 150) + 'px';
+                            glowEffects[0].style.left = (x - 150) + 'px';
+                        });
+                        
+                        // 为卡片添加点击效果
+                        const menuItems = document.querySelectorAll('.menu-item');
+                        menuItems.forEach(item => {
+                            if (item.id !== 'learningReportBtn') {
+                                item.addEventListener('click', function() {
+                                    // 这里可以添加其他菜单项的点击事件
+                                    alert('Feature under development, stay tuned!');
+                                });
+                            }
+                        });
+                        
+                        // 为徽章添加点击效果 - 改进的处理方式，区分锁定和未锁定的徽章
+                        const badgeItems = document.querySelectorAll('.badge-item');
+                        badgeItems.forEach(badge => {
+                            badge.addEventListener('click', function() {
+                                // Check if this is a locked badge
+                                if (badge.classList.contains('locked-badge')) {
+                                    // Find unlock info element
+                                    const unlockInfo = badge.querySelector('.badge-unlock-info');
+                                    if (unlockInfo) {
+                                        // Toggle visibility of unlock information
+                                        if (unlockInfo.style.display === 'none') {
+                                            unlockInfo.style.display = 'block';
+                                            
+                                            // Auto-hide after 3 seconds
+                                            setTimeout(() => {
+                                                unlockInfo.style.display = 'none';
+                                            }, 3000);
+                                        } else {
+                                            unlockInfo.style.display = 'none';
+                                        }
+                                    }
+                                } else {
+                                    // For unlocked badges - display details (currently just logs)
+                                    console.log('Badge details feature under development:', badge.querySelector('.badge-name').textContent);
+                                }
+                            });
+                        });
+                        
+                        // 为生成个性化学习计划按钮添加点击事件
+                        const generatePlanBtn = document.getElementById('generatePlanBtn');
+                        const planStatusMsg = document.getElementById('planStatusMsg');
+                        
+                        if (generatePlanBtn) {
+                            generatePlanBtn.addEventListener('click', function() {
+                                // Indicate processing start - replace alert with visual feedback
+                                generatePlanBtn.disabled = true;
+                                generatePlanBtn.innerHTML = 'Generating... <span class="spinner">⏳</span>';
+                                planStatusMsg.textContent = ''; // Clear previous messages
+                                
+                                // Simulate processing time (e.g., 2 seconds)
+                                setTimeout(function() {
+                                    // Indicate processing finished
+                                    generatePlanBtn.disabled = false;
+                                    generatePlanBtn.innerHTML = 'Generate Personalized Study Plan';
+                                    planStatusMsg.textContent = 'Personalized plan generated successfully!';
+                                    
+                                    // Show the history link container after successful generation
+                                    const planHistoryContainer = document.getElementById('planHistoryContainer');
+                                    if (planHistoryContainer) {
+                                        planHistoryContainer.style.display = 'block';
+                                    }
+                                    
+                                    // Optionally clear the message after a few seconds
+                                    setTimeout(() => {
+                                        planStatusMsg.textContent = '';
+                                    }, 5000);
+                                    
+                                }, 2000); // 2 seconds delay
+                            });
+                        }
+
+                        // Logout confirmation
+                        const logoutBtn = document.getElementById('logoutBtn');
+                        if (logoutBtn) {
+                            logoutBtn.addEventListener('click', function(event) {
+                                event.preventDefault(); // Prevent default link behavior
+                                if (window.confirm("Are you sure you want to logout?")) {
+                                    // Proceed with logout action (e.g., redirect or clear session)
+                                    console.log("User confirmed logout.");
+                                    // window.location.href = '/logout'; // Example redirect
+                                } else {
+                                    console.log("User cancelled logout.");
+                                }
+                            });
+                        }
+
+                        // Add click handlers for bottom navigation items
+                        /* // Commenting out this block as it interferes with standard href navigation
+                        const navItems = document.querySelectorAll('.bottom-nav .nav-item');
+                        navItems.forEach(item => {
+                            item.addEventListener('click', function(event) {
+                                const feature = this.getAttribute('data-feature'); // This attribute is no longer used
+
+                                // Only prevent default for non-profile items
+                                if (feature !== 'profile') { // This logic is now incorrect
+                                    event.preventDefault();
+
+                                    // Show tooltip about feature availability
+                                    const tooltipMsg = `The ${this.textContent.trim()} feature will be available soon!`;
+
+                                    // Create and show a non-blocking tooltip instead of an alert
+                                    const tooltip = document.createElement('div');
+                                    tooltip.style.position = 'fixed';
+                                    tooltip.style.bottom = '70px'; // Above the navigation bar
+                                    tooltip.style.left = '50%';
+                                    tooltip.style.transform = 'translateX(-50%)';
+                                    tooltip.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+                                    tooltip.style.color = 'white';
+                                    tooltip.style.padding = '8px 16px';
+                                    tooltip.style.borderRadius = '20px';
+                                    tooltip.style.fontSize = '14px';
+                                    tooltip.style.zIndex = '1000';
+                                    tooltip.textContent = tooltipMsg;
+
+                                    document.body.appendChild(tooltip);
+
+                                    // Remove the tooltip after a few seconds
+                                    setTimeout(() => {
+                                        if (tooltip.parentNode === document.body) { // Check if still attached
+                                            document.body.removeChild(tooltip);
+                                        }
+                                    }, 2000);
+                                }
+                            });
+                        });
+                        */ // End of commented out block
+
+                        // Add event listener for the view previous plans link
+                        const viewPreviousPlansLink = document.getElementById('viewPreviousPlans');
+                        if (viewPreviousPlansLink) {
+                            viewPreviousPlansLink.addEventListener('click', function(event) {
+                                event.preventDefault();
+                                
+                                // Create and show a dialog with previous plans
+                                const tooltip = document.createElement('div');
+                                tooltip.style.position = 'fixed';
+                                tooltip.style.top = '50%';
+                                tooltip.style.left = '50%';
+                                tooltip.style.transform = 'translate(-50%, -50%)';
+                                tooltip.style.backgroundColor = 'white';
+                                tooltip.style.color = '#333';
+                                tooltip.style.padding = '20px';
+                                tooltip.style.borderRadius = '10px';
+                                tooltip.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.2)';
+                                tooltip.style.maxWidth = '80%';
+                                tooltip.style.width = '350px';
+                                tooltip.style.zIndex = '1000';
+                                
+                                const title = document.createElement('h3');
+                                title.textContent = 'Previous Study Plans';
+                                title.style.marginBottom = '15px';
+                                title.style.borderBottom = '1px solid #eee';
+                                title.style.paddingBottom = '10px';
+                                
+                                const closeButton = document.createElement('button');
+                                closeButton.textContent = '✕';
+                                closeButton.style.position = 'absolute';
+                                closeButton.style.top = '10px';
+                                closeButton.style.right = '10px';
+                                closeButton.style.background = 'none';
+                                closeButton.style.border = 'none';
+                                closeButton.style.fontSize = '16px';
+                                closeButton.style.cursor = 'pointer';
+                                closeButton.style.color = '#666';
+                                
+                                const planList = document.createElement('div');
+                                
+                                // Sample previous plans (in a real app, these would be retrieved from storage)
+                                const plans = [
+                                    { date: 'March 15, 2023', focus: 'Algorithm Optimization' },
+                                    { date: 'March 10, 2023', focus: 'Data Structures Review' },
+                                    { date: 'March 05, 2023', focus: 'Math Foundations' }
+                                ];
+                                
+                                plans.forEach(plan => {
+                                    const planItem = document.createElement('div');
+                                    planItem.style.padding = '10px';
+                                    planItem.style.marginBottom = '10px';
+                                    planItem.style.backgroundColor = '#f8f8f8';
+                                    planItem.style.borderRadius = '5px';
+                                    planItem.style.cursor = 'pointer';
+                                    
+                                    const planDate = document.createElement('div');
+                                    planDate.textContent = plan.date;
+                                    planDate.style.fontWeight = 'bold';
+                                    planDate.style.fontSize = '0.9rem';
+                                    
+                                    const planFocus = document.createElement('div');
+                                    planFocus.textContent = `Focus: ${plan.focus}`;
+                                    planFocus.style.fontSize = '0.8rem';
+                                    planFocus.style.color = '#666';
+                                    planFocus.style.marginTop = '5px';
+                                    
+                                    planItem.appendChild(planDate);
+                                    planItem.appendChild(planFocus);
+                                    planList.appendChild(planItem);
+                                });
+                                
+                                tooltip.appendChild(title);
+                                tooltip.appendChild(closeButton);
+                                tooltip.appendChild(planList);
+                                
+                                // Add backdrop
+                                const backdrop = document.createElement('div');
+                                backdrop.style.position = 'fixed';
+                                backdrop.style.top = '0';
+                                backdrop.style.left = '0';
+                                backdrop.style.width = '100%';
+                                backdrop.style.height = '100%';
+                                backdrop.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                                backdrop.style.zIndex = '999';
+                                
+                                document.body.appendChild(backdrop);
+                                document.body.appendChild(tooltip);
+                                
+                                // Close modal when clicking close button or backdrop
+                                closeButton.addEventListener('click', function() {
+                                    document.body.removeChild(tooltip);
+                                    document.body.removeChild(backdrop);
+                                });
+                                
+                                backdrop.addEventListener('click', function() {
+                                    document.body.removeChild(tooltip);
+                                    document.body.removeChild(backdrop);
+                                });
+                            });
+                        }
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 帮助中心页面 -->
+    <div id="helpPage" class="page">
+        <div class="report-header">
+            <div class="back-btn" id="backFromHelpBtn">←</div>
+            <div>
+                <div class="report-title">Help Center</div>
+                <div class="report-subtitle">Find answers and support</div>
+            </div>
+        </div>
+        
+        <div class="container">
+            <!-- 搜索框 -->
+            <div class="card">
+                <div class="help-search-container">
+                    <input type="text" id="helpSearch" class="help-search-input" placeholder="Search for help topics...">
+                    <button class="search-btn">🔍</button>
+                </div>
+            </div>
+            
+            <!-- 快速链接 -->
+            <div class="card">
+                <div class="report-section-title">Quick Links</div>
+                <div class="quick-links">
+                    <div class="quick-link-item">
+                        <div class="quick-link-icon">📚</div>
+                        <div class="quick-link-text">Getting Started Guide</div>
+                    </div>
+                    <div class="quick-link-item">
+                        <div class="quick-link-icon">❓</div>
+                        <div class="quick-link-text">Frequently Asked Questions</div>
+                    </div>
+                    <div class="quick-link-item">
+                        <div class="quick-link-icon">🔧</div>
+                        <div class="quick-link-text">Troubleshooting</div>
+                    </div>
+                    <div class="quick-link-item">
+                        <div class="quick-link-icon">📱</div>
+                        <div class="quick-link-text">Mobile App Guide</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 常见问题 -->
+            <div class="card">
+                <div class="report-section-title">Frequently Asked Questions</div>
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">How do I reset my password?</div>
+                        <div class="faq-answer">Go to Settings > Security > Reset Password. Follow the prompts to create a new password.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">How can I track my learning progress?</div>
+                        <div class="faq-answer">Visit the Learning Report section to view detailed statistics and progress tracking.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">How do I join study groups?</div>
+                        <div class="faq-answer">Navigate to Study Groups and click 'Join Group' to find and join available groups.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 用户指南 -->
+            <div class="card">
+                <div class="report-section-title">User Guides</div>
+                <div class="guide-container">
+                    <div class="guide-item">
+                        <div class="guide-icon">📖</div>
+                        <div class="guide-content">
+                            <div class="guide-title">Getting Started with Learning Platform</div>
+                            <div class="guide-desc">Learn the basics of using our learning platform effectively.</div>
+                        </div>
+                    </div>
+                    <div class="guide-item">
+                        <div class="guide-icon">🎯</div>
+                        <div class="guide-content">
+                            <div class="guide-title">Setting Learning Goals</div>
+                            <div class="guide-desc">Create and track your learning objectives.</div>
+                        </div>
+                    </div>
+                    <div class="guide-item">
+                        <div class="guide-icon">📊</div>
+                        <div class="guide-content">
+                            <div class="guide-title">Understanding Learning Analytics</div>
+                            <div class="guide-desc">Make sense of your learning data and progress.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 联系支持 -->
+            <div class="card">
+                <div class="report-section-title">Need More Help?</div>
+                <div class="support-container">
+                    <p class="support-text">Can't find what you're looking for? Our support team is here to help.</p>
+                    <button class="support-btn">Contact Support</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 帮助中心页面切换
+        const helpPage = document.getElementById('helpPage');
+        const backFromHelpBtn = document.getElementById('backFromHelpBtn');
+        const helpMenuItem = document.querySelector('.menu-item:has(.menu-title:contains("Help & Documentation"))');
+        
+        helpMenuItem.addEventListener('click', function() {
+            profilePage.classList.remove('active');
+            helpPage.classList.add('active');
+            window.scrollTo(0, 0);
+        });
+        
+        backFromHelpBtn.addEventListener('click', function() {
+            helpPage.classList.remove('active');
+            profilePage.classList.add('active');
+            window.scrollTo(0, 0);
+        });
+        
+        // FAQ 展开/收起
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(item => {
+            item.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+        
+        // 搜索功能
+        const helpSearch = document.getElementById('helpSearch');
+        helpSearch.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            // 搜索FAQ
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question').textContent.toLowerCase();
+                const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+                
+                if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // 搜索指南
+            const guideItems = document.querySelectorAll('.guide-item');
+            guideItems.forEach(item => {
+                const title = item.querySelector('.guide-title').textContent.toLowerCase();
+                const desc = item.querySelector('.guide-desc').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || desc.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+        
+        // 联系支持按钮
+        const supportBtn = document.querySelector('.support-btn');
+        supportBtn.addEventListener('click', function() {
+            // 这里可以添加联系支持的逻辑
+            alert('Support team will contact you shortly!');
+        });
+    </script>
+</body>
+</html>

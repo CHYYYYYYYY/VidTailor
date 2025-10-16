@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Map</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 70px;
+        }
+        
+        .app-header {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: 60px;
+        }
+        
+        .app-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+        }
+        
+        .app-title::before {
+            display: none;
+        }
+        
+        .header-icons {
+            display: flex;
+            align-items: center;
+        }
+        
+        .header-icon {
+            margin-left: 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .header-icon:hover {
+            transform: scale(1.2);
+        }
+        
+        .search-bar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .search-bar:focus-within {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .search-icon {
+            margin-right: 10px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .search-input {
+            background: transparent;
+            border: none;
+            color: white;
+            flex: 1;
+            font-size: 0.9rem;
+            outline: none;
+        }
+        
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .voice-icon {
+            color: white;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .voice-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .ai-assistant-card {
+            background: linear-gradient(135deg, #ffffff, #f0f8ff);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            border-left: 5px solid #4a00e0;
+        }
+        
+        .ai-assistant-card::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(74, 0, 224, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        
+        .ai-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .ai-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.2rem;
+            margin-right: 12px;
+            box-shadow: 0 4px 8px rgba(74, 0, 224, 0.3);
+        }
+        
+        .ai-title {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .ai-message {
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        .learning-path-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .learning-path-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .learning-path-card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(to bottom, #8e2de2, #4a00e0);
+        }
+        
+        .path-type {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #4a00e0;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .path-type::before {
+            content: "🌟";
+            margin-right: 5px;
+        }
+        
+        .path-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .weak-point-card {
+            background: #fff9f9;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .weak-point-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .weak-point-card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(to bottom, #ff9a9e, #fad0c4);
+        }
+        
+        .weak-type {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .weak-type::before {
+            content: "⚠️";
+            margin-right: 5px;
+        }
+        
+        .exercise-card {
+            background: #f0f8ff;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .exercise-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .exercise-card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(to bottom, #4facfe, #00f2fe);
+        }
+        
+        .exercise-type {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .exercise-type::before {
+            content: "📝";
+            margin-right: 5px;
+        }
+        
+        .knowledge-map-container {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .map-controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+        
+        .map-control-btn {
+            background: #f0f0f0;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            color: #666;
+        }
+        
+        .map-control-btn:hover {
+            background: #e0e0e0;
+        }
+        
+        .map-canvas {
+            width: 100%;
+            position: relative;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+        }
+        
+        .node {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            background-image: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 70%);
+            backdrop-filter: blur(5px);
+        }
+        
+        .node:hover {
+            transform: scale(1.15) translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2), 0 0 0 2px rgba(255, 255, 255, 0.3) inset;
+        }
+        
+        .node-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #333;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 1);
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 3px 8px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .edge {
+            position: absolute;
+            height: 3px;
+            background: rgba(150, 150, 150, 0.15);
+            transform-origin: left center;
+            z-index: 1;
+            border-radius: 3px;
+        }
+        
+        .edge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(74, 0, 224, 0.2), transparent);
+            animation: flow 3s linear infinite;
+        }
+        
+        @keyframes flow {
+            0% { background-position: -100% 0; }
+            100% { background-position: 100% 0; }
+        }
+        
+        .edge-label {
+            position: absolute;
+            background: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            color: #555;
+            white-space: nowrap;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(2px);
+            background-color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            z-index: 3;
+            transform: translateY(-8px);
+            letter-spacing: 0.5px;
+        }
+        
+        .algorithm-details {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .algorithm-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .algorithm-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+        
+        .algorithm-title::before {
+            content: "🔍";
+            margin-right: 8px;
+        }
+        
+        .mastery-badge {
+            background: rgba(74, 0, 224, 0.1);
+            color: #4a00e0;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        
+        .algorithm-path {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .path-segment {
+            display: inline-block;
+            margin: 0 3px;
+            color: #4a00e0;
+        }
+        
+        .related-section {
+            margin-top: 20px;
+        }
+        
+        .related-title {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #333;
+            position: relative;
+            padding-left: 15px;
+        }
+        
+        .related-title::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 5px;
+            height: 15px;
+            background: linear-gradient(to bottom, #8e2de2, #4a00e0);
+            border-radius: 3px;
+        }
+        
+        .related-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .related-item {
+            background: #f9f9ff;
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .related-item:hover {
+            background: #f0f0ff;
+            transform: translateY(-2px);
+        }
+        
+        .related-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .mastered {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+        
+        .learning {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+        
+        .not-learned {
+            background: rgba(107, 114, 128, 0.1);
+            color: #6b7280;
+        }
+        
+        .related-name {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .action-button {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(74, 0, 224, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin: 20px auto 0;
+        }
+        
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(74, 0, 224, 0.4);
+        }
+        
+        .action-button::before {
+            content: "▶";
+            margin-right: 8px;
+            font-size: 0.8rem;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #888;
+            text-decoration: none;
+            font-size: 0.7rem;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-item.active {
+            color: #4a00e0;
+        }
+        
+        .nav-icon {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        /* 添加科幻感的元素 */
+        .glow-effect {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(74, 0, 224, 0.05) 0%, rgba(255, 255, 255, 0) 70%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .glow-1 {
+            top: -100px;
+            right: -100px;
+        }
+        
+        .glow-2 {
+            bottom: 30%;
+            left: -150px;
+        }
+        
+        /* 添加动画效果 */
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 0.5; }
+        }
+        
+        .pulse-animation {
+            animation: pulse 4s infinite ease-in-out;
+        }
+        
+        /* 添加节点动画效果 */
+        @keyframes nodeAppear {
+            0% { transform: scale(0); opacity: 0; }
+            60% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .node-animation {
+            animation: nodeAppear 0.5s forwards;
+        }
+        
+        /* 添加边动画效果 */
+        @keyframes edgeAppear {
+            0% { opacity: 0; width: 0; }
+            100% { opacity: 1; }
+        }
+        
+        .edge-animation {
+            animation: edgeAppear 0.8s forwards;
+        }
+        
+        /* 添加浮动动画 */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-5px) rotate(-1deg); }
+            66% { transform: translateY(3px) rotate(1deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        
+        .float-animation {
+            animation: float 5s infinite ease-in-out;
+        }
+        
+        /* 添加滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #7928ca, #3700b3);
+        }
+        
+        /* 添加浮动按钮 */
+        .floating-button {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 10px rgba(74, 0, 224, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 99;
+        }
+        
+        .floating-button:hover {
+            transform: scale(1.1) rotate(45deg);
+            box-shadow: 0 6px 15px rgba(74, 0, 224, 0.5);
+        }
+        
+        /* Added from home.html */
+        .header-back-button {
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-right: 15px;
+            color: white;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+        .header-back-button:hover {
+            transform: scale(1.1);
+        }
+        .icon {
+            display: inline-block;
+            width: 1.2em;
+            height: 1.2em;
+            text-align: center;
+            line-height: 1.2em;
+        }
+        .header-icon .icon, .header-back-button .icon {
+            font-size: 1.2rem;
+        }
+        .header-back-button .icon {
+            font-size: 1.5rem;
+        }
+        .search-container {
+            position: relative;
+            margin-left: 15px;
+        }
+        .search-input {
+            padding: 6px 10px 6px 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+            font-size: 0.9rem;
+            width: 150px;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .search-input:focus {
+            background-color: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.8);
+            width: 200px;
+            outline: none;
+        }
+        .search-icon-btn {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            pointer-events: none;
+        }
+        .help-icon {
+            margin-left: 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.3s ease, color 0.3s ease;
+            color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+        }
+        .help-icon:hover {
+            transform: scale(1.1);
+            color: white;
+        }
+        .help-icon .icon {
+            margin-right: 0px;
+        }
+        button:focus-visible, a:focus-visible, .header-icon:focus-visible, .header-back-button:focus-visible, .nav-item:focus-visible {
+            outline: 2px solid #4a00e0;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 4px rgba(74, 0, 224, 0.2);
+            border-radius: 4px; 
+        }
+    </style>
+</head>
+<body>
+    <!-- 科幻感光效 -->
+    <div class="glow-effect glow-1 pulse-animation"></div>
+    <div class="glow-effect glow-2 pulse-animation"></div>
+
+    <!-- 头部 -->
+    <header class="app-header">
+        <div style="display: flex; align-items: center;">
+            <div class="header-back-button" onclick="history.back()" title="Go Back" tabindex="0">
+                <span class="icon">⬅️</span>
+            </div>
+            <div class="app-title">Study Map</div>
+        </div>
+        <div class="header-icons">
+            <div class="header-icon" title="Notifications" tabindex="0"><span class="icon">🔔</span></div>
+            <div class="search-container">
+                <span class="search-icon-btn"><span class="icon">🔍</span></span>
+                <input type="search" class="search-input" placeholder="Search map...">
+            </div>
+            <div class="help-icon" title="Help Center" tabindex="0" id="helpIcon">
+                <span class="icon">❓</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 搜索栏 (Keep existing functionality, but maybe hide it or integrate differently?) -->
+    <div class="container">
+        <div class="search-bar" style="display: none;">
+            <div class="search-icon">🔍</div>
+            <input type="text" class="search-input" placeholder="Search knowledge points, concepts...">
+            <div class="voice-icon">🎤</div>
+        </div>
+
+        <!-- AI助手卡片 -->
+        <div class="ai-assistant-card">
+            <div class="ai-header">
+                <div class="ai-avatar">🤖</div>
+                <div class="ai-title">AI Learning Assistant</div>
+            </div>
+            <div class="ai-message">
+                Xiao Ming, based on your learning progress I've generated personalized learning paths and suggestions for you:
+            </div>
+
+            <!-- 最佳学习路径 -->
+            <div class="learning-path-card">
+                <div class="path-type">Best Learning Path</div>
+                <div class="path-title">Graph Representation → Shortest Path → Dijkstra → Floyd</div>
+            </div>
+
+            <!-- 弱点 -->
+            <div class="weak-point-card">
+                <div class="weak-type">Weak Points</div>
+                <div class="path-title">Negative Edge Handling, Dijkstra Algorithm Optimization</div>
+            </div>
+
+            <!-- 今日推荐练习 -->
+            <div class="exercise-card">
+                <div class="exercise-type">Today's Recommended Exercises</div>
+                <div class="path-title">Click to start Dijkstra algorithm classic exercises</div>
+            </div>
+        </div>
+
+        <!-- 知识图谱 -->
+        <div class="knowledge-map-container">
+            <div class="map-controls">
+                <button class="map-control-btn" id="zoomIn">➕</button>
+                <button class="map-control-btn" id="zoomOut">➖</button>
+                <button class="map-control-btn" id="resetView">⟲</button>
+                <button class="map-control-btn" id="expandAll">🔍</button>
+            </div>
+            <div class="map-canvas" id="knowledgeMapCanvas">
+                <img src="./K.png?v=1" alt="Dijkstra's Algorithm Flowchart" style="max-width: 100%; width: 65%; height: auto; object-fit: contain; display: block; margin: 0 auto; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);">
+            </div>
+        </div>
+
+        <!-- 算法详情 -->
+        <div class="algorithm-details">
+            <div class="algorithm-header">
+                <div class="algorithm-title">Dijkstra's Algorithm</div>
+                <div class="mastery-badge">Mastery: 75%</div>
+            </div>
+            <div class="algorithm-path">
+                <span>Data Structures</span>
+                <span class="path-segment">→</span>
+                <span>Graph Theory</span>
+                <span class="path-segment">→</span>
+                <span>Shortest Path</span>
+                <span class="path-segment">→</span>
+                <span>Dijkstra</span>
+            </div>
+
+            <!-- 相关知识点 -->
+            <div class="related-section">
+                <div class="related-title">Key Concepts</div>
+                <div class="related-items">
+                    <div class="related-item">
+                        <div class="related-icon mastered">✓</div>
+                        <div class="related-name">Graph Representation</div>
+                    </div>
+                    <div class="related-item">
+                        <div class="related-icon mastered">✓</div>
+                        <div class="related-name">Priority Queue</div>
+                    </div>
+                    <div class="related-item">
+                        <div class="related-icon learning">↻</div>
+                        <div class="related-name">Greedy Algorithms</div>
+                    </div>
+                    <div class="related-item">
+                        <div class="related-icon not-learned">-</div>
+                        <div class="related-name">Negative Edge Handling</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="action-button">Start Practice</button>
+        </div>
+    </div>
+
+    <!-- 浮动按钮 -->
+    <div class="floating-button">+</div>
+
+    <!-- 底部导航 -->
+    <nav class="bottom-nav">
+        <a href="home.html" class="nav-item">
+            <div class="nav-icon"><span class="icon">🏠</span></div>
+            <div>Home</div>
+        </a>
+        <a href="knowledgemap.html" class="nav-item active">
+            <div class="nav-icon"><span class="icon">📚</span></div>
+            <div>Study Map</div>
+        </a>
+        <a href="mistake-book.html" class="nav-item">
+            <div class="nav-icon"><span class="icon">📝</span></div>
+            <div>Mistake Book</div>
+        </a>
+        <a href="community.html" class="nav-item">
+            <div class="nav-icon"><span class="icon">👥</span></div>
+            <div>Community</div>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <div class="nav-icon"><span class="icon">👤</span></div>
+            <div>Profile</div>
+        </a>
+    </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加科幻感的动态效果
+            document.addEventListener('mousemove', function(e) {
+                const glowEffects = document.querySelectorAll('.glow-effect');
+                const x = e.clientX;
+                const y = e.clientY;
+                
+                // 让第一个光效跟随鼠标移动
+                glowEffects[0].style.top = (y - 150) + 'px';
+                glowEffects[0].style.left = (x - 150) + 'px';
+            });
+            
+            // 实现缩放功能
+            let scale = 1;
+            const flowchartImg = document.querySelector('#knowledgeMapCanvas img');
+            
+            document.getElementById('zoomIn').addEventListener('click', () => {
+                if (scale < 2) {
+                    scale += 0.1;
+                    flowchartImg.style.transform = `scale(${scale})`;
+                }
+            });
+            
+            document.getElementById('zoomOut').addEventListener('click', () => {
+                if (scale > 0.5) {
+                    scale -= 0.1;
+                    flowchartImg.style.transform = `scale(${scale})`;
+                }
+            });
+            
+            document.getElementById('resetView').addEventListener('click', () => {
+                scale = 1;
+                flowchartImg.style.transform = `scale(1)`;
+            });
+            
+            document.getElementById('expandAll').addEventListener('click', () => {
+                // Simple pulse effect on the image
+                flowchartImg.style.transition = 'transform 0.3s ease';
+                flowchartImg.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    flowchartImg.style.transform = `scale(${scale})`;
+                }, 300);
+            });
+            
+            // 添加卡片点击事件
+            document.querySelectorAll('.learning-path-card, .weak-point-card, .exercise-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    // 添加点击波纹效果
+                    const ripple = document.createElement('div');
+                    ripple.classList.add('ripple-effect');
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                    
+                    // 滚动到知识图谱
+                    document.querySelector('.knowledge-map-container').scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+            
+            // 添加开始练习按钮事件
+            document.querySelector('.action-button').addEventListener('click', function() {
+                alert('开始练习 Dijkstra 算法！');
+            });
+            
+            // 添加浮动按钮事件
+            document.querySelector('.floating-button').addEventListener('click', function() {
+                this.classList.toggle('active');
+                if (this.classList.contains('active')) {
+                    this.textContent = '×';
+                    // 这里可以添加显示更多操作的逻辑
+                } else {
+                    this.textContent = '+';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

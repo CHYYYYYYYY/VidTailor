@@ -1,0 +1,2171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .app-header {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: 60px;
+        }
+        
+        .app-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+        }
+        
+        .app-title::before {
+            /* Removed as icon is separated */
+            /* content: "🚀"; */
+            /* margin-right: 8px; */
+            /* font-size: 1.2rem; */
+        }
+        
+        .header-icons {
+            display: flex;
+            align-items: center;
+        }
+        
+        .header-icon {
+            margin-left: 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .header-icon:hover {
+            transform: scale(1.2);
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .welcome-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid #4a00e0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .welcome-card::after {
+            display: none;
+        }
+        
+        .welcome-text h2 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .welcome-text p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .progress-circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: conic-gradient(#4a00e0 50%, #e6e6e6 0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 0 15px rgba(74, 0, 224, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .progress-circle::before {
+            content: "50%";
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #4a00e0;
+            font-size: 0.9rem;
+        }
+        
+        .continue-action-container {
+            position: relative;
+            display: inline-block;
+            margin-top: 15px;
+        }
+        
+        .continue-btn {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(74, 0, 224, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+            position: relative;
+            margin-right: 0;
+            overflow: hidden;
+            min-width: 180px;
+        }
+        
+        .continue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(74, 0, 224, 0.4);
+        }
+        
+        .continue-btn::before {
+            content: "▶";
+            margin-right: 8px;
+            font-size: 0.8rem;
+        }
+        
+        .continue-btn.loading {
+            padding-right: 40px;
+        }
+        
+        .continue-btn .btn-text {
+            position: relative;
+            z-index: 2;
+            transition: opacity 0.2s ease;
+            white-space: nowrap;
+        }
+        
+        .continue-btn.loading .btn-text {
+            opacity: 1;
+        }
+        
+        .continue-btn .spinner {
+            display: none;
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s linear infinite;
+            margin-left: 0;
+            z-index: 2;
+        }
+        
+        .continue-btn.loading .spinner {
+            display: block;
+        }
+        
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(74, 0, 224, 0.2);
+        }
+        
+        .section-title h2 {
+            font-size: 1.2rem;
+            color: #333;
+            position: relative;
+        }
+        
+        .section-title h2::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            border-radius: 3px;
+        }
+        
+        .view-all {
+            color: #4a00e0;
+            font-size: 0.8rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .view-all::after {
+            content: "→";
+            margin-left: 5px;
+            transition: transform 0.3s ease;
+        }
+        
+        .view-all:hover::after {
+            transform: translateX(3px);
+        }
+        
+        .learning-plan {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+        }
+        
+        .plan-item {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border-left: 3px solid transparent;
+        }
+        
+        .plan-item:hover {
+            background-color: #f9f9ff;
+            transform: translateX(3px);
+            border-left-color: #4a00e0;
+        }
+        
+        .plan-item:focus-visible {
+            background-color: #f5f5ff;
+            transform: translateX(3px);
+            border-left-color: #4a00e0;
+        }
+        
+        .plan-item::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: transparent;
+            transition: background 0.3s ease;
+        }
+        
+        .plan-item:hover::before {
+            background: linear-gradient(to bottom, #8e2de2, #4a00e0);
+        }
+        
+        .plan-item:last-child {
+            border-bottom: none;
+        }
+        
+        .plan-info {
+            flex: 1;
+        }
+        
+        .plan-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+        
+        .plan-title::before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .completed .plan-title::before {
+            background-color: #10b981;
+        }
+        
+        .in-progress .plan-title::before {
+            background-color: #3b82f6;
+        }
+        
+        .to-do .plan-title::before {
+            background-color: #6b7280;
+        }
+        
+        .plan-desc {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .plan-status {
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .plan-status-icon {
+            margin-right: 5px;
+            font-size: 0.9em;
+        }
+        
+        .completed .plan-status {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+        
+        .in-progress .plan-status {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+        
+        .to-do .plan-status {
+            background-color: rgba(107, 114, 128, 0.1);
+            color: #6b7280;
+        }
+        
+        .learning-card {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .learning-card:hover,
+        .learning-card:focus-visible {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+            border-left-color: #4a00e0;
+        }
+        
+        .learning-card:focus-visible {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 0 0 4px rgba(74, 0, 224, 0.15), 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .card-img {
+            width: 100px;
+            min-width: 100px;
+            height: 100px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .card-content {
+            padding: 15px;
+            flex: 1;
+            position: relative;
+        }
+        
+        .card-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .card-desc {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .card-stats {
+            display: flex;
+            font-size: 0.75rem;
+            color: #888;
+        }
+        
+        .stat {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+        
+        .stat-icon {
+            margin-right: 5px;
+            opacity: 0.7;
+        }
+        
+        .progress-tag {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(74, 0, 224, 0.1);
+            color: #4a00e0;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .ai-recommendations {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+        }
+        
+        .tip-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #4a00e0;
+            font-weight: bold;
+        }
+        
+        .tip-header::before {
+            content: "💡";
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .tip-content {
+            font-size: 0.9rem;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .recommendation-item {
+            display: flex;
+            padding: 12px;
+            border-radius: 10px;
+            background: #f9f9ff;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+        
+        .recommendation-item:hover,
+        .recommendation-item:focus-visible {
+            transform: translateX(6px) scale(1.01);
+            background: #edf0ff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            border-left-color: #4a00e0;
+        }
+        
+        .recommendation-item:focus-visible {
+            transform: translateX(6px) scale(1.01);
+            background: #e5eaff;
+            box-shadow: 0 0 0 4px rgba(74, 0, 224, 0.15), 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .recommendation-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .recommendation-text {
+            flex: 1;
+        }
+        
+        .recommendation-title {
+            font-weight: 500;
+            margin-bottom: 3px;
+            color: #333;
+        }
+        
+        .recommendation-desc {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #888;
+            text-decoration: none;
+            font-size: 0.7rem;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-item.active {
+            color: #4a00e0;
+            position: relative;
+        }
+        
+        .nav-item.active::after {
+            content: "";
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 5px;
+            background-color: #4a00e0;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-icon {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        /* 添加科幻感的元素 */
+        .glow-effect {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(74, 0, 224, 0.05) 0%, rgba(255, 255, 255, 0) 70%);
+            pointer-events: none;
+            z-index: -2;
+            opacity: 0.3;
+        }
+        
+        .glow-1 {
+            top: -100px;
+            right: -100px;
+        }
+        
+        .glow-2 {
+            bottom: 30%;
+            left: -150px;
+        }
+        
+        /* 添加动画效果 */
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 0.5; }
+        }
+        
+        .pulse-animation {
+            animation: none;
+        }
+        
+        /* 添加滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #7928ca, #3700b3);
+        }
+        
+        /* 确保页面底部有足够空间，不被底部导航栏遮挡 */
+        body {
+            padding-bottom: 70px;
+        }
+        
+        .header-back-button {
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-right: 15px;
+            color: white;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+        
+        .header-back-button:hover {
+            transform: scale(1.1);
+        }
+        
+        .cancel-btn {
+            display: none;
+            position: absolute;
+            right: -85px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #f8f8f8;
+            border: 1px solid #ccc;
+            color: #555;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            z-index: 1;
+        }
+        
+        .cancel-btn:hover {
+            background-color: #eee;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        }
+        
+        .continue-action-container.loading .cancel-btn {
+            display: inline-block;
+        }
+        
+        .card-hint {
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 8px;
+            text-align: right;
+        }
+
+        /* Add consistent focus styles for accessibility */
+        button:focus-visible, a:focus-visible, .header-icon:focus-visible, .header-back-button:focus-visible, .nav-item:focus-visible {
+            outline: 2px solid #4a00e0;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 4px rgba(74, 0, 224, 0.2);
+            border-radius: 4px; /* Optional: round the focus indicator */
+        }
+        /* Ensure interactive card elements also get focus */
+        .learning-card:focus-visible, .recommendation-item:focus-visible, .plan-item:focus-visible {
+            outline: 2px solid #4a00e0;
+            outline-offset: 1px;
+            box-shadow: 0 0 0 4px rgba(74, 0, 224, 0.15);
+            border-radius: 12px; /* Match card radius */
+        }
+
+        /* Style for icon placeholders (if using class-based icons) */
+        .icon {
+            display: inline-block;
+            /* Add styles for your chosen icon library here */
+            /* E.g., font-family: 'Font Awesome 5 Free'; font-weight: 900; */
+            width: 1.2em; /* Example sizing */
+            height: 1.2em; /* Example sizing */
+            /* background-color: #ccc; /* Placeholder visualization */
+            text-align: center;
+            line-height: 1.2em;
+        }
+        .nav-icon .icon {
+            font-size: 1.2rem; /* Keep original size */
+            margin-bottom: 5px;
+        }
+        .header-icon .icon, .header-back-button .icon {
+            font-size: 1.2rem; /* Keep original size */
+        }
+        .header-back-button .icon {
+            font-size: 1.5rem; /* Match back button size */
+        }
+
+        .search-container {
+            position: relative;
+            margin-left: 15px;
+        }
+        .search-input {
+            padding: 6px 10px 6px 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+            font-size: 0.9rem;
+            width: 150px;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .search-input:focus {
+            background-color: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.8);
+            width: 200px;
+            outline: none;
+        }
+        .search-icon-btn {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            pointer-events: none;
+        }
+
+        /* Recommendation reason style */
+        .recommendation-reason {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        /* Quick Action Button Style */
+        .mark-complete-btn {
+            background: none;
+            border: 1px solid #3b82f6; /* Blue border */
+            color: #3b82f6;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            vertical-align: middle; /* Align with status text */
+        }
+        .mark-complete-btn:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        .plan-item.completed .mark-complete-btn {
+             display: none; /* Hide when completed */
+        }
+        /* Ensure button focus style is visible */
+        .mark-complete-btn:focus-visible {
+            outline: 1px solid #3b82f6;
+            outline-offset: 1px;
+             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Toast Notification for Undo */
+        .toast-container {
+            position: fixed;
+            bottom: 80px; /* Above bottom nav */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: auto;
+            max-width: 90%;
+        }
+        .toast {
+            background-color: #333;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            margin-bottom: 8px;
+            animation: slideUp 0.3s ease;
+            font-size: 0.9rem;
+        }
+        .toast-message {
+            margin-right: 15px;
+        }
+        .toast-action {
+            background: none;
+            border: 1px solid white;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background-color 0.2s ease;
+        }
+        .toast-action:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        @keyframes slideDown {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+        }
+        .toast.hiding {
+            animation: slideDown 0.3s ease forwards;
+        }
+
+        /* Search Results and Error Styles */
+        .search-results {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            display: none; /* Hidden by default */
+            text-align: center; /* Center content */
+        }
+        .search-results h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center title */
+        }
+        .search-error {
+            color: #555;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .search-error-icon {
+            font-size: 4rem; /* Larger emoji */
+            margin-bottom: 15px;
+            color: #666;
+        }
+        .search-error-title {
+            font-weight: 500;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        .search-error-message {
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            color: #666;
+            max-width: 320px; /* Control width of message */
+        }
+        .back-to-home {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 10px;
+            box-shadow: 0 4px 8px rgba(74, 0, 224, 0.2);
+        }
+        .back-to-home:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(74, 0, 224, 0.3);
+        }
+
+        /* Help Icon in Header */
+        .help-icon {
+            margin-left: 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.3s ease, color 0.3s ease;
+            color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+        }
+        .help-icon:hover {
+            transform: scale(1.1);
+            color: white;
+        }
+        .help-icon .icon {
+            margin-right: 4px;
+        }
+
+        /* Help Panel Styles */
+        .help-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .help-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+        .help-panel {
+            position: fixed;
+            top: 0;
+            right: -400px; /* Start offscreen */
+            width: 380px;
+            max-width: 90%;
+            height: 100%;
+            background-color: white;
+            box-shadow: -3px 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .help-panel.active {
+            right: 0;
+        }
+        .help-header {
+            padding: 15px 20px;
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .help-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .help-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .help-close:hover {
+            transform: scale(1.1);
+        }
+        .help-search {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .help-search-input {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            font-size: 0.9rem;
+            background-color: #f8f8f8;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .help-search-input:focus {
+            border-color: #8e2de2;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(142, 45, 226, 0.1);
+        }
+        .help-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .help-section {
+            margin-bottom: 25px;
+        }
+        .help-section-title {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+        .help-section-title::before {
+            content: "";
+            display: inline-block;
+            width: 6px;
+            height: 18px;
+            background: linear-gradient(to bottom, #8e2de2, #4a00e0);
+            margin-right: 8px;
+            border-radius: 3px;
+        }
+        .help-topic-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .help-topic {
+            margin-bottom: 8px;
+        }
+        .help-topic-link {
+            color: #4a00e0;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            padding: 8px 10px;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+        }
+        .help-topic-link:hover {
+            background-color: rgba(74, 0, 224, 0.05);
+        }
+        .help-topic-link::before {
+            content: "•";
+            margin-right: 8px;
+            color: #8e2de2;
+        }
+        .faq-item {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 15px;
+        }
+        .faq-question {
+            font-weight: 500;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+        .faq-question::after {
+            content: "+";
+            font-size: 1.1rem;
+            color: #8e2de2;
+            transition: transform 0.3s ease;
+        }
+        .faq-question.active::after {
+            content: "−";
+            transform: rotate(180deg);
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.5;
+        }
+        .faq-answer.active {
+            max-height: 500px;
+            padding-top: 10px;
+        }
+        .context-help {
+            background-color: #f8f8ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 4px solid #4a00e0;
+        }
+        .context-help-title {
+            font-weight: 500;
+            color: #4a00e0;
+            margin-bottom: 8px;
+        }
+        .context-help-text {
+            font-size: 0.85rem;
+            color: #555;
+        }
+
+        /* Enhance tooltips for recognition over recall */
+        [title] {
+            position: relative;
+            cursor: help;
+        }
+
+        /* 进度条样式 */
+        .progress-bar {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.7);
+            width: 0%;
+            transition: width 0.2s ease;
+            z-index: 1;
+        }
+
+        /* --- 添加自定义确认对话框样式 --- */
+        .confirm-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .confirm-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .confirm-dialog {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transform: translateY(20px);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            text-align: center;
+        }
+        
+        .confirm-overlay.active .confirm-dialog {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .confirm-icon {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            margin: 0 auto 20px;
+            box-shadow: 0 5px 15px rgba(142, 45, 226, 0.3);
+        }
+        
+        .confirm-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .confirm-message {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            padding: 0 10px;
+        }
+        
+        .confirm-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .confirm-btn {
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            border: none;
+        }
+        
+        .confirm-btn-primary {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: white;
+            box-shadow: 0 4px 10px rgba(142, 45, 226, 0.2);
+        }
+        
+        .confirm-btn-primary:hover {
+            box-shadow: 0 6px 15px rgba(142, 45, 226, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .confirm-btn-secondary {
+            background: #f4f4f4;
+            color: #555;
+        }
+        
+        .confirm-btn-secondary:hover {
+            background: #e8e8e8;
+        }
+        
+        /* 在这里添加模态框动画效果 */
+        @keyframes pulse-confirm {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .confirm-icon {
+            animation: pulse-confirm 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Simplified glow effects - just one subtle effect -->
+    <div class="glow-effect glow-1"></div>
+    <!-- Removed second glow effect for minimalism -->
+
+    <!-- 头部 -->
+    <header class="app-header">
+        <div style="display: flex; align-items: center;">
+            <div class="header-back-button" onclick="history.back()" title="Go Back" tabindex="0">
+                <span class="icon">⬅️</span>
+            </div>
+            <div class="app-title">Home</div>
+        </div>
+        <div class="header-icons">
+            <div class="header-icon" title="Notifications" tabindex="0"><span class="icon">🔔</span></div>
+            <div class="search-container">
+                <span class="search-icon-btn"><span class="icon">🔍</span></span>
+                <input type="search" class="search-input" placeholder="Search courses...">
+            </div>
+            <!-- Added Help Icon -->
+            <div class="help-icon" title="Help Center" tabindex="0" id="helpIcon">
+                <span class="icon">❓</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Search Results Section (initially hidden) -->
+        <div id="searchResults" class="search-results">
+            <h3>Search Results: <span id="searchQuery"></span></h3>
+            <div class="search-error">
+                <div class="search-error-icon">🐶</div>
+                <div class="search-error-title">No results found</div>
+                <div class="search-error-message">Try checking your spelling or using different keywords</div>
+                <button class="back-to-home">Back to Home</button>
+            </div>
+        </div>
+
+        <!-- 欢迎卡片 -->
+        <div class="welcome-card">
+            <div class="welcome-text">
+                <h2>Hello, Li Xiang</h2>
+                <p>Today's learning tasks are 50% complete</p>
+                <div class="continue-action-container">
+                    <button class="continue-btn">
+                        <span class="btn-text">Continue Learning</span>
+                        <div class="spinner"></div>
+                        <div class="progress-bar"></div>
+                    </button>
+                    <button class="cancel-btn">Cancel</button>
+                </div>
+            </div>
+            <div class="progress-circle"></div>
+        </div>
+
+        <!-- 今日学习计划 -->
+        <div class="section-title">
+            <h2>Today's Learning Plan</h2>
+            <a href="#" class="view-all">View All</a>
+        </div>
+
+        <div class="learning-plan">
+            <div class="plan-item completed" tabindex="0">
+                <div class="plan-info">
+                    <div class="plan-title">Data Structures - Graph Algorithm Exercises</div>
+                    <div class="plan-desc">Estimated time: 45 minutes</div>
+                </div>
+                <div class="plan-status"><span class="plan-status-icon">✅</span>Completed</div>
+            </div>
+
+            <div class="plan-item in-progress" tabindex="0">
+                <div class="plan-info">
+                    <div class="plan-title">Advanced Mathematics - Review Differential Equations</div>
+                    <div class="plan-desc">Estimated time: 90 minutes</div>
+                </div>
+                <div class="plan-status"><span class="plan-status-icon">⏳</span>In progress
+                    <button class="mark-complete-btn">Mark Complete</button>
+                </div>
+            </div>
+
+            <div class="plan-item to-do" tabindex="0">
+                <div class="plan-info">
+                    <div class="plan-title">Computer Networks - TCP/IP Protocol Study</div>
+                    <div class="plan-desc">Recommended time: 60 minutes</div>
+                </div>
+                <div class="plan-status"><span class="plan-status-icon">📋</span>To Do
+                    <button class="mark-complete-btn">Mark Complete</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 最近学习 -->
+        <div class="section-title">
+            <h2>Recent Learning</h2>
+            <a href="#" class="view-all">View all</a>
+        </div>
+
+        <div class="learning-card" tabindex="0">
+            <div class="card-img">📊</div>
+            <div class="card-content">
+                <div class="card-title">Data Structures and Algorithm Analysis</div>
+                <div class="card-desc">Last studied: Graph's Shortest Path algorithms</div>
+                <div class="card-stats">
+                    <div class="stat"><span class="stat-icon">⏱️</span> Time: 45:25</div>
+                    <div class="stat"><span class="stat-icon">📚</span> Chapters: 12/15</div>
+                </div>
+                <div class="progress-tag">75%</div>
+                <div class="card-hint">Click to view details</div>
+            </div>
+        </div>
+
+        <div class="learning-card" tabindex="0">
+            <div class="card-img">🧮</div>
+            <div class="card-content">
+                <div class="card-title">Advanced Mathematics (Part 2)</div>
+                <div class="card-desc">Last studied: Applications of Differential Equations</div>
+                <div class="card-stats">
+                    <div class="stat"><span class="stat-icon">⏱️</span> Time: 67:25</div>
+                    <div class="stat"><span class="stat-icon">📚</span> Sections: 8/22</div>
+                </div>
+                <div class="progress-tag">47%</div>
+                <div class="card-hint">Click to view details</div>
+            </div>
+        </div>
+
+        <!-- AI推荐内容 -->
+        <div class="section-title">
+            <h2>AI Recommended Content</h2>
+            <a href="#" class="view-all">More Recommendations</a>
+        </div>
+
+        <div class="ai-recommendations">
+            <div class="tip-header">Learning Tips</div>
+            <div class="tip-content">
+                The AI has detected that you've watched the "Graph's Shortest Path" topic multiple times. We've prepared the following resources for you:
+            </div>
+
+            <div class="recommendation-item" tabindex="0">
+                <div class="recommendation-icon">📹</div>
+                <div class="recommendation-text">
+                    <div class="recommendation-title">More Intuitive Dijkstra Algorithm Explanation</div>
+                    <div class="recommendation-desc">Interactive visualization and step-by-step animation demonstration</div>
+                    <div class="recommendation-reason">Related to your interest in "Graph's Shortest Path"</div>
+                </div>
+            </div>
+
+            <div class="recommendation-item" tabindex="0">
+                <div class="recommendation-icon">📝</div>
+                <div class="recommendation-text">
+                    <div class="recommendation-title">Additional Practice Graph Examples</div>
+                    <div class="recommendation-desc">Recommendation reason: Matches your learning progress</div>
+                    <div class="recommendation-reason">Based on activity in "Data Structures"</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <nav class="bottom-nav">
+        <a href="home.html" class="nav-item active">
+            <div class="nav-icon"><span class="icon">🏠</span></div>
+            <div>Home</div>
+        </a>
+        <a href="knowledgemap.html" class="nav-item">
+            <div class="nav-icon"><span class="icon">📚</span></div>
+            <div>Study Map</div>
+        </a>
+        <a href="mistake-book.html" class="nav-item">
+            <div class="nav-icon"><span class="icon">📝</span></div>
+            <div>Mistake Book</div>
+        </a>
+        <a href="community.html" class="nav-item">
+            <div class="nav-icon"><span class="icon">👥</span></div>
+            <div>Community</div>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <div class="nav-icon"><span class="icon">👤</span></div>
+            <div>Profile</div>
+        </a>
+    </nav>
+
+    <!-- Toast Container (initially empty) -->
+    <div class="toast-container"></div>
+
+    <!-- Help Overlay and Panel -->
+    <div class="help-overlay" id="helpOverlay"></div>
+    <div class="help-panel" id="helpPanel">
+        <div class="help-header">
+            <div class="help-title">Help Center</div>
+            <button class="help-close" id="helpClose">×</button>
+        </div>
+        <div class="help-search">
+            <input type="search" class="help-search-input" placeholder="Search for help topics..." id="helpSearchInput">
+        </div>
+        <div class="help-content">
+            <!-- Contextual help based on current page -->
+            <div class="context-help">
+                <div class="context-help-title">Home Page Help</div>
+                <div class="context-help-text">
+                    You're currently on the Home page. Here you can see your learning progress, 
+                    today's learning plan, and personalized recommendations based on your study patterns.
+                </div>
+            </div>
+
+            <!-- Frequently Asked Questions -->
+            <div class="help-section">
+                <div class="help-section-title">Frequently Asked Questions</div>
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <div class="faq-question">How do I track my learning progress?</div>
+                        <div class="faq-answer">
+                            Your learning progress is tracked automatically as you complete lessons and exercises. 
+                            You can see your overall progress at the top of the home page and detailed progress 
+                            for each course in the course cards. Click on a course to see more detailed statistics.
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">How are recommendations generated?</div>
+                        <div class="faq-answer">
+                            Our AI system analyzes your learning patterns, including topics you spend more time on, 
+                            areas where you excel or struggle, and your learning schedule. Based on this analysis, 
+                            we suggest resources that might help reinforce concepts or introduce new related topics 
+                            at the optimal time for your learning journey.
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Can I customize my learning plan?</div>
+                        <div class="faq-answer">
+                            Yes! Click on the "View All" link next to "Today's Learning Plan" to access the plan 
+                            editor. There you can rearrange tasks, adjust estimated completion times, and add new 
+                            items to your plan. The system will adapt recommendations based on your customizations.
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">How do I mark a task as complete?</div>
+                        <div class="faq-answer">
+                            To mark a task as complete, simply click the "Mark Complete" button next to any in-progress 
+                            or to-do item in your learning plan. You'll see a confirmation message with an option to 
+                            undo if you marked it by mistake. Completed items contribute to your daily progress percentage.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Common Help Topics -->
+            <div class="help-section">
+                <div class="help-section-title">Common Topics</div>
+                <ul class="help-topic-list">
+                    <li class="help-topic">
+                        <a href="#" class="help-topic-link">Getting Started Guide</a>
+                    </li>
+                    <li class="help-topic">
+                        <a href="#" class="help-topic-link">Keyboard Shortcuts</a>
+                    </li>
+                    <li class="help-topic">
+                        <a href="#" class="help-topic-link">Progress Tracking Explained</a>
+                    </li>
+                    <li class="help-topic">
+                        <a href="#" class="help-topic-link">Managing Your Study Schedule</a>
+                    </li>
+                    <li class="help-topic">
+                        <a href="#" class="help-topic-link">Understanding AI Recommendations</a>
+                    </li>
+                    <li class="help-topic">
+                        <a href="#" class="help-topic-link">Account Settings & Preferences</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Getting Additional Help -->
+            <div class="help-section">
+                <div class="help-section-title">Still Need Help?</div>
+                <ul class="help-topic-list">
+                    <li class="help-topic">
+                        <a href="#" class="help-topic-link">Contact Support</a>
+                    </li>
+                    <li class="help-topic">
+                        <a href="#" class="help-topic-link">Join Community Forums</a>
+                    </li>
+                    <li class="help-topic">
+                        <a href="#" class="help-topic-link">Video Tutorials</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加确认对话框HTML结构 -->
+    <div class="confirm-overlay" id="customConfirm">
+        <div class="confirm-dialog">
+            <div class="confirm-icon">❓</div>
+            <div class="confirm-title">Confirm Action</div>
+            <div class="confirm-message">Are you sure you want to complete this task?</div>
+            <div class="confirm-actions">
+                <button class="confirm-btn confirm-btn-secondary" id="confirmCancel">Cancel</button>
+                <button class="confirm-btn confirm-btn-primary" id="confirmOk">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Global variables for shared elements
+            const searchInput = document.querySelector('.search-input');
+            const navItems = document.querySelectorAll('.bottom-nav .nav-item');
+            const planItems = document.querySelectorAll('.learning-plan .plan-item');
+            const continueBtn = document.querySelector('.continue-btn');
+            const cancelBtn = document.querySelector('.cancel-btn');
+            const actionContainer = document.querySelector('.continue-action-container');
+            const cards = document.querySelectorAll('.learning-card, .recommendation-item, .plan-item');
+            
+            // 自定义确认对话框元素
+            const customConfirm = document.getElementById('customConfirm');
+            const confirmMessage = customConfirm.querySelector('.confirm-message');
+            const confirmTitle = customConfirm.querySelector('.confirm-title');
+            const confirmOkBtn = document.getElementById('confirmOk');
+            const confirmCancelBtn = document.getElementById('confirmCancel');
+            let confirmResolve = null;
+            
+            // 自定义确认对话框函数
+            function showCustomConfirm(title, message) {
+                confirmTitle.textContent = title || 'Confirm Action';
+                confirmMessage.textContent = message || 'Are you sure?';
+                
+                customConfirm.classList.add('active');
+                
+                // 使用Promise等待用户响应
+                return new Promise((resolve) => {
+                    confirmResolve = resolve;
+                    
+                    // 清除之前可能附加的事件监听器
+                    const newOkBtn = confirmOkBtn.cloneNode(true);
+                    const newCancelBtn = confirmCancelBtn.cloneNode(true);
+                    
+                    confirmOkBtn.parentNode.replaceChild(newOkBtn, confirmOkBtn);
+                    confirmCancelBtn.parentNode.replaceChild(newCancelBtn, confirmCancelBtn);
+                    
+                    // 重新获取引用
+                    const updatedOkBtn = document.getElementById('confirmOk');
+                    const updatedCancelBtn = document.getElementById('confirmCancel');
+                    
+                    // 添加新的事件监听器
+                    updatedOkBtn.addEventListener('click', () => {
+                        if (confirmResolve) {
+                            confirmResolve(true);
+                            confirmResolve = null;
+                        }
+                        customConfirm.classList.remove('active');
+                    });
+                    
+                    updatedCancelBtn.addEventListener('click', () => {
+                        if (confirmResolve) {
+                            confirmResolve(false);
+                            confirmResolve = null;
+                        }
+                        customConfirm.classList.remove('active');
+                    });
+                    
+                    // 点击背景关闭并返回false
+                    customConfirm.addEventListener('click', (e) => {
+                        if (e.target === customConfirm) {
+                            if (confirmResolve) {
+                                confirmResolve(false);
+                                confirmResolve = null;
+                            }
+                            customConfirm.classList.remove('active');
+                        }
+                    }, { once: true });
+                });
+            }
+            
+            // Add tool tips to important elements for better recognition rather than recall
+            const actionableElements = document.querySelectorAll('.header-icon, .mark-complete-btn, .view-all, .continue-btn, .back-to-home');
+            actionableElements.forEach(el => {
+                if (!el.hasAttribute('title') && el.textContent.trim()) {
+                    // Add descriptive titles for recognition rather than recall
+                    if (el.classList.contains('mark-complete-btn')) {
+                        el.setAttribute('title', 'Mark this task as completed');
+                    } else if (el.classList.contains('view-all')) {
+                        const sectionTitle = el.closest('.section-title').querySelector('h2').textContent;
+                        el.setAttribute('title', `View all ${sectionTitle.toLowerCase()}`);
+                    } else if (el.classList.contains('continue-btn')) {
+                        el.setAttribute('title', 'Continue from where you left off');
+                    } else if (el.classList.contains('back-to-home')) {
+                        el.setAttribute('title', 'Return to home page');
+                    }
+                }
+            });
+            
+            // Update active indicators when tabs are clicked - uses the global navItems
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Remove active class from all items
+                    navItems.forEach(i => i.classList.remove('active'));
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    // Visual feedback on change
+                    const icon = this.querySelector('.nav-icon');
+                    if (icon) {
+                        icon.style.transform = 'scale(1.2)';
+                        setTimeout(() => {
+                            icon.style.transform = '';
+                        }, 300);
+                    }
+                });
+            });
+            
+            // Simplified mousemove effect - less intrusive
+            document.addEventListener('mousemove', function(e) {
+                const glowEffect = document.querySelector('.glow-effect');
+                if (glowEffect) {
+                    // Move more subtly and with dampening
+                    const x = e.clientX;
+                    const y = e.clientY;
+                    
+                    requestAnimationFrame(() => {
+                        glowEffect.style.transform = `translate(${x/20}px, ${y/20}px)`;
+                    });
+                }
+            });
+            
+            // Toast notification functions
+            function showUndoToast(message, undoCallback) {
+                const toastContainer = document.querySelector('.toast-container');
+                
+                // Create toast element
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                
+                // Add message and button
+                const messageSpan = document.createElement('span');
+                messageSpan.className = 'toast-message';
+                messageSpan.textContent = message;
+                
+                const undoButton = document.createElement('button');
+                undoButton.className = 'toast-action';
+                undoButton.textContent = 'Undo';
+                
+                toast.appendChild(messageSpan);
+                toast.appendChild(undoButton);
+                toastContainer.appendChild(toast);
+                
+                // Set timeout for auto-dismiss (3 seconds)
+                const toastTimeout = setTimeout(() => {
+                    dismissToast(toast);
+                }, 3000);
+                
+                // Add undo button click handler
+                undoButton.addEventListener('click', function() {
+                    clearTimeout(toastTimeout); // Cancel auto-dismiss
+                    if (undoCallback && typeof undoCallback === 'function') {
+                        undoCallback(); // Call the undo function
+                    }
+                    dismissToast(toast);
+                });
+                
+                // Function to dismiss toast with animation
+                function dismissToast(toastElement) {
+                    toastElement.classList.add('hiding');
+                    setTimeout(() => {
+                        if (toastElement.parentNode) {
+                            toastElement.parentNode.removeChild(toastElement);
+                        }
+                    }, 300); // Wait for animation to complete
+                }
+            }
+            
+            // Error toast notification function
+            function showErrorToast(message, retryCallback) {
+                const toastContainer = document.querySelector('.toast-container');
+                
+                // Create toast element
+                const toast = document.createElement('div');
+                toast.className = 'toast error-toast';
+                
+                // Add message and button
+                const messageSpan = document.createElement('span');
+                messageSpan.className = 'toast-message';
+                messageSpan.innerHTML = `<span class="toast-icon">⚠️</span> ${message}`;
+                
+                const retryButton = document.createElement('button');
+                retryButton.className = 'toast-action';
+                retryButton.textContent = 'Retry';
+                
+                toast.appendChild(messageSpan);
+                toast.appendChild(retryButton);
+                toastContainer.appendChild(toast);
+                
+                // Set timeout for auto-dismiss (longer for errors - 5 seconds)
+                const toastTimeout = setTimeout(() => {
+                    dismissToast(toast);
+                }, 5000);
+                
+                // Add retry button click handler
+                retryButton.addEventListener('click', function() {
+                    clearTimeout(toastTimeout); // Cancel auto-dismiss
+                    if (retryCallback && typeof retryCallback === 'function') {
+                        retryCallback(); // Call the retry function
+                    }
+                    dismissToast(toast);
+                });
+                
+                // Function to dismiss toast with animation
+                function dismissToast(toastElement) {
+                    toastElement.classList.add('hiding');
+                    setTimeout(() => {
+                        if (toastElement.parentNode) {
+                            toastElement.parentNode.removeChild(toastElement);
+                        }
+                    }, 300); // Wait for animation to complete
+                }
+            }
+            
+            // --- Card Ripple Effect --- //
+            cards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Prevent triggering click on button inside plan-item
+                    if (e.target.closest('button')) {
+                        return;
+                    }
+                    
+                    // Ripple effect logic
+                    const ripple = document.createElement('div');
+                    ripple.style.position = 'absolute';
+                    ripple.style.borderRadius = '50%';
+                    ripple.style.background = 'rgba(0, 0, 0, 0.1)';
+                    ripple.style.transform = 'scale(0)';
+                    ripple.style.animation = 'ripple-animation 0.6s linear';
+                    ripple.style.pointerEvents = 'none'; // Ignore pointer events
+                    
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    
+                    const cardX = e.clientX - rect.left;
+                    const cardY = e.clientY - rect.top;
+                    
+                    ripple.style.left = cardX - size / 2 + 'px';
+                    ripple.style.top = cardY - size / 2 + 'px';
+                    
+                    if (window.getComputedStyle(this).position === 'static') {
+                        this.style.position = 'relative';
+                        this.style.overflow = 'hidden';
+                    }
+                    this.appendChild(ripple);
+                    
+                    // Define ripple animation
+                    const styleSheet = document.styleSheets[0];
+                    const keyframes =
+                    `@keyframes ripple-animation {
+                        to {
+                            transform: scale(4);
+                            opacity: 0;
+                        }
+                    }`;
+                    try {
+                        styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
+                    } catch (err) {
+                        // Handle potential errors
+                    }
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+            
+            // --- Keyboard Shortcuts --- //
+            document.addEventListener('keydown', function(e) {
+                const activeElement = document.activeElement;
+                const isTyping = activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.isContentEditable;
+                
+                // Shortcut: Focus search with '/'
+                if (e.key === '/' && !isTyping) {
+                    e.preventDefault(); // Prevent typing '/' in the search box
+                    if (searchInput) {
+                        searchInput.focus();
+                    }
+                }
+                
+                // Shortcut: Navigate bottom nav with keys 1-5
+                if (!isTyping && e.key >= '1' && e.key <= '5') {
+                    const index = parseInt(e.key) - 1;
+                    if (navItems && navItems[index]) {
+                        // Simulate click or navigate directly
+                        navItems[index].click(); // Simple simulation
+                        console.log(`Navigating to item ${e.key}`);
+                    }
+                }
+            });
+            
+            // --- Enhanced Error Prevention: Confirmation for Mark Complete --- //
+            planItems.forEach(item => {
+                const markCompleteBtn = item.querySelector('.mark-complete-btn');
+                const statusDiv = item.querySelector('.plan-status');
+                const statusIcon = item.querySelector('.plan-status-icon');
+                
+                if (markCompleteBtn && statusDiv && statusIcon) {
+                    markCompleteBtn.addEventListener('click', async function(e) {
+                        e.stopPropagation(); // 防止触发plan item点击
+                        
+                        // 获取任务标题用于确认和通知
+                        const itemTitle = item.querySelector('.plan-title').textContent.trim();
+                        
+                        // 判断是否需要确认
+                        const needsConfirmation = itemTitle.toLowerCase().includes('review') || 
+                                                item.classList.contains('important');
+                        
+                        let proceed = true;
+                        if (needsConfirmation) {
+                            // 使用自定义确认对话框而不是浏览器默认confirm
+                            proceed = await showCustomConfirm(
+                                'Complete Task', 
+                                `Are you sure you want to mark "${itemTitle}" as complete?`
+                            );
+                        }
+                        
+                        if (proceed) {
+                            // 保存原始状态以便撤销
+                            const originalClasses = [...item.classList];
+                            const originalStatusHTML = statusDiv.innerHTML; // 保存整个HTML结构
+                            
+                            // 更新项目状态
+                            item.classList.remove('in-progress', 'to-do');
+                            item.classList.add('completed');
+                            
+                            // 更新状态文本和图标
+                            statusIcon.textContent = '✅';
+                            // 移除现有文本节点后添加新的文本节点
+                            Array.from(statusDiv.childNodes).forEach(node => {
+                                if (node.nodeType === Node.TEXT_NODE) {
+                                    statusDiv.removeChild(node);
+                                }
+                            });
+                            statusDiv.appendChild(document.createTextNode('Completed')); // 添加新文本
+                            statusDiv.insertBefore(statusIcon, statusDiv.firstChild); // 确保图标在最前
+                            
+                            // 显示带撤销选项的提示
+                            showUndoToast(
+                                `"${itemTitle}" marked as complete.`, 
+                                function() {
+                                    // 撤销功能 - 恢复原始状态
+                                    item.className = originalClasses.join(' '); // 恢复所有原始类
+                                    
+                                    // 完全恢复原始状态HTML，包括按钮
+                                    statusDiv.innerHTML = originalStatusHTML;
+                                    
+                                    // 重新获取已刷新DOM元素的引用
+                                    const refreshedStatusIcon = statusDiv.querySelector('.plan-status-icon');
+                                    const refreshedBtn = statusDiv.querySelector('.mark-complete-btn');
+                                    
+                                    // 重新为刷新的按钮添加事件监听器
+                                    if (refreshedBtn) {
+                                        // 复制并替换按钮以移除旧的事件监听器
+                                        const newBtn = refreshedBtn.cloneNode(true);
+                                        refreshedBtn.parentNode.replaceChild(newBtn, refreshedBtn);
+                                        
+                                        // 重新添加点击处理程序
+                                        newBtn.addEventListener('click', arguments.callee);
+                                    }
+                                    
+                                    console.log(`Undid marking "${itemTitle}" as complete.`);
+                                }
+                            );
+                            
+                            console.log(`Marked item "${itemTitle}" as complete.`);
+                        }
+                    });
+                }
+            });
+            
+            // --- Search Error Handling --- //
+            const searchResultsContainer = document.getElementById('searchResults');
+            const searchQuerySpan = document.getElementById('searchQuery');
+            const backToHomeBtn = document.querySelector('.back-to-home');
+            
+            if (searchInput) {
+                // Handle search on Enter key
+                searchInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        const query = this.value.trim();
+                        if (query) {
+                            // Simulate search - in real app would call API/search function
+                            simulateSearch(query);
+                        }
+                    }
+                });
+            }
+            
+            function simulateSearch(query) {
+                // Show the search results container with proper query
+                searchResultsContainer.style.display = 'block';
+                searchQuerySpan.textContent = `"${query}"`;
+                
+                // Hide welcome card, learning plan, etc to focus on search results
+                const mainContent = document.querySelectorAll('.welcome-card, .learning-plan, .learning-card, .section-title, .ai-recommendations');
+                mainContent.forEach(el => {
+                    el.dataset.previousDisplay = el.style.display || '';
+                    el.style.display = 'none';
+                });
+                
+                // Scroll to results
+                searchResultsContainer.scrollIntoView({ behavior: 'smooth' });
+                
+                console.log(`Search query "${query}" executed with no results.`);
+            }
+            
+            // Handle back to home button click
+            if (backToHomeBtn) {
+                backToHomeBtn.addEventListener('click', function() {
+                    // Hide search results
+                    searchResultsContainer.style.display = 'none';
+                    
+                    // Show all previously hidden content
+                    const mainContent = document.querySelectorAll('.welcome-card, .learning-plan, .learning-card, .section-title, .ai-recommendations');
+                    mainContent.forEach(el => {
+                        el.style.display = el.dataset.previousDisplay || '';
+                    });
+                    
+                    // Clear search input
+                    if (searchInput) {
+                        searchInput.value = '';
+                    }
+                    
+                    // Scroll back to top
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+            
+            // --- Continue Learning Error Handling with Progress Bar --- //
+            if (continueBtn && cancelBtn && actionContainer) {
+                // 模拟50%的错误概率
+                const errorRate = 0.5;
+                
+                // 设置Continue Learning按钮处理逻辑
+                continueBtn.addEventListener('click', function() {
+                    if (actionContainer.classList.contains('loading')) {
+                        return;
+                    }
+                    
+                    // 获取按钮文本和进度条元素
+                    const btnText = continueBtn.querySelector('.btn-text');
+                    const progressBar = continueBtn.querySelector('.progress-bar');
+                    let progress = 0;
+                    
+                    // 重置进度条
+                    if (progressBar) {
+                        progressBar.style.width = '0%';
+                    }
+                    
+                    actionContainer.classList.add('loading');
+                    continueBtn.classList.add('loading');
+                    cancelBtn.style.display = 'inline-block'; // 显示取消按钮
+                    
+                    // 模拟加载进度
+                    const originalText = btnText.textContent;
+                    const progressInterval = setInterval(() => {
+                        // 随机增加进度，但确保接近100%时速度变慢
+                        if (progress < 90) {
+                            progress += Math.random() * 10;
+                        } else {
+                            progress += Math.random() * 2;
+                        }
+                        
+                        if (progress > 100) progress = 99; // 保持在99%，直到完成
+                        
+                        // 更新进度显示
+                        btnText.textContent = `Loading ${Math.floor(progress)}%`;
+                        if (progressBar) {
+                            progressBar.style.width = `${progress}%`;
+                        }
+                    }, 200);
+                    
+                    // 模拟网络请求可能失败
+                    const loadingTimeoutId = setTimeout(() => {
+                        clearInterval(progressInterval); // 停止更新进度
+                        
+                        // 随机成功/失败
+                        if (Math.random() < errorRate) {
+                            // 失败情况
+                            actionContainer.classList.remove('loading');
+                            continueBtn.classList.remove('loading');
+                            cancelBtn.style.display = 'none'; // 隐藏取消按钮
+                            btnText.textContent = originalText; // 恢复原始文本
+                            progressBar.style.width = '0%'; // 重置进度条
+                            
+                            // 显示错误提示
+                            showErrorToast(
+                                'Connection error. Could not load next lesson.',
+                                function() {
+                                    // 重试函数
+                                    continueBtn.click();
+                                }
+                            );
+                        } else {
+                            // 成功情况
+                            // 显示100%完成
+                            progress = 100;
+                            btnText.textContent = `Loading ${Math.floor(progress)}%`;
+                            progressBar.style.width = `${progress}%`;
+                            
+                            // 短暂延迟后恢复
+                            setTimeout(() => {
+                                actionContainer.classList.remove('loading');
+                                continueBtn.classList.remove('loading');
+                                cancelBtn.style.display = 'none'; // 隐藏取消按钮
+                                btnText.textContent = originalText; // 恢复原始文本
+                                progressBar.style.width = '0%'; // 重置进度条
+                                console.log("Continue learning action finished.");
+                                // 示例: window.location.href = '/next-lesson';
+                            }, 400);
+                        }
+                    }, 3000);
+                    
+                    // 取消按钮功能
+                    cancelBtn.onclick = function(e) {
+                        e.stopPropagation(); // 防止触发继续按钮点击
+                        clearTimeout(loadingTimeoutId); // 清除超时
+                        clearInterval(progressInterval); // 停止更新进度
+                        
+                        actionContainer.classList.remove('loading');
+                        continueBtn.classList.remove('loading');
+                        btnText.textContent = originalText; // 恢复原始文本
+                        progressBar.style.width = '0%'; // 重置进度条
+                        this.style.display = 'none'; // 隐藏取消按钮
+                        console.log("Action cancelled.");
+                    };
+                });
+            }
+
+            // --- Help Center Functionality --- //
+            const helpIcon = document.getElementById('helpIcon');
+            const helpPanel = document.getElementById('helpPanel');
+            const helpOverlay = document.getElementById('helpOverlay');
+            const helpClose = document.getElementById('helpClose');
+            const helpSearchInput = document.getElementById('helpSearchInput');
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            
+            // Open Help Panel
+            if (helpIcon) {
+                helpIcon.addEventListener('click', function() {
+                    helpPanel.classList.add('active');
+                    helpOverlay.classList.add('active');
+                    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                });
+            }
+            
+            // Close Help Panel
+            if (helpClose) {
+                helpClose.addEventListener('click', closeHelpPanel);
+            }
+            
+            if (helpOverlay) {
+                helpOverlay.addEventListener('click', closeHelpPanel);
+            }
+            
+            function closeHelpPanel() {
+                helpPanel.classList.remove('active');
+                helpOverlay.classList.remove('active');
+                document.body.style.overflow = ''; // Restore scrolling
+            }
+            
+            // FAQ Accordion Functionality
+            if (faqQuestions.length > 0) {
+                faqQuestions.forEach(question => {
+                    question.addEventListener('click', function() {
+                        // Toggle active state on the question
+                        this.classList.toggle('active');
+                        
+                        // Toggle active state on the answer
+                        const answer = this.nextElementSibling;
+                        answer.classList.toggle('active');
+                    });
+                });
+            }
+            
+            // Help Search Functionality
+            if (helpSearchInput) {
+                helpSearchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase().trim();
+                    
+                    // If empty, show all
+                    if (!searchTerm) {
+                        document.querySelectorAll('.faq-item, .help-topic').forEach(item => {
+                            item.style.display = '';
+                        });
+                        document.querySelectorAll('.help-section').forEach(section => {
+                            section.style.display = '';
+                        });
+                        return;
+                    }
+                    
+                    // Hide all sections initially
+                    document.querySelectorAll('.help-section').forEach(section => {
+                        section.style.display = 'none';
+                    });
+                    
+                    // Search FAQ questions
+                    let hasResults = false;
+                    document.querySelectorAll('.faq-item').forEach(item => {
+                        const question = item.querySelector('.faq-question').textContent.toLowerCase();
+                        const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+                        
+                        if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                            item.style.display = '';
+                            item.closest('.help-section').style.display = '';
+                            hasResults = true;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                    
+                    // Search help topics
+                    document.querySelectorAll('.help-topic').forEach(topic => {
+                        const topicText = topic.textContent.toLowerCase();
+                        
+                        if (topicText.includes(searchTerm)) {
+                            topic.style.display = '';
+                            topic.closest('.help-section').style.display = '';
+                            hasResults = true;
+                        } else {
+                            topic.style.display = 'none';
+                        }
+                    });
+                    
+                    // Always show contextual help
+                    document.querySelector('.context-help').closest('.help-section').style.display = '';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
