@@ -1,7 +1,68 @@
-# Vaditailor
-VidTailor: 基于视频内容理解个性化辅导系统										  06.2024-06. 2025 
-李月 ‪Yue Li‬ - ‪Google Scholar‬
-现有视频学习平台的不足与解决方案：现有视频学习平台普遍缺乏配套练习题，尤其是针对性的练习题，无法及时检查学生对知识点的掌握情况。此外，平台无法根据不同学生的学习水平和学习重点提供个性化的练习。为了解决这些问题，VidTailor生成个性化学习路径，基于学生的观看行为（如快放、慢放、暂停等）实时生成针对性的练习题，并提供即时反馈，帮助学生在学习过程中自我检测和强化理解。
-高效视频错题本和笔记本：系统将学生练习的错题与对应的教学视频片段精确关联，便于学生在复习时一键回顾相关内容。平台自动记录错题并高亮知识点，帮助学生整理易错知识。通过同步的笔记功能，系统有效弥补学生的认知盲点，提升复习效率和知识体系的完整性。
-社交学习互动模块强化协作交流：系统通过推荐算法匹配有相似问题的学习者，引导他们进入主题论坛或群组问答，分享见解与解题思路。智能群聊助手协助学生讨论疑难并推送相关知识点，将分散在聊天软件的讨论，营造互助学习社区氛围，提高学习动力与参与度。
-多轮原型测试与用户反馈驱动系统迭代优化：通过情境演示视频、低保真原型访谈和问卷调查收集反馈，不断完善功能与界面设计。在启发式评估基础上进行A/B测试比较不同交互提示方案，平衡提示及时性与干扰度以优化用户体验。多次迭代显著提升了系统易用性（SUS满意度评分、任务完成率等），验证了设计思路的有效性并指明了进一步改进方向。
+# VidTailor
+
+**Personalized Tutoring System Based on Video Content Understanding**
+
+*Project Duration: June 2024 - June 2025*
+
+## Overview
+
+VidTailor is an intelligent video learning platform that generates personalized practice questions by analyzing students' viewing behaviors, providing precise learning feedback and a social learning experience.
+
+## Core Features
+
+### 1. Intelligent Question Generation
+
+- **Behavior-Driven Analysis**: Real-time identification of learning difficulties based on viewing behaviors (fast-forward, slow-motion, pause, replay, etc.)
+- **Personalized Questions**: Automatically generates practice questions tailored to individual learning levels and weak points
+- **Instant Feedback**: Provides real-time feedback to help students test and reinforce their understanding immediately
+
+### 2. Smart Error Book & Note System
+
+- **Video Segment Linking**: Precisely associates incorrect answers with corresponding video segments for one-click review
+- **Knowledge Point Highlighting**: Automatically records errors and highlights key concepts to build a personal knowledge gap database
+- **Synchronized Notes**: Smart note-taking feature addresses cognitive blind spots, improving review efficiency and knowledge system completeness
+
+### 3. Social Learning Interaction
+
+- **Smart Matching**: Recommendation algorithm pairs learners with similar questions or challenges
+- **Topic Forums**: Guides students into relevant discussion groups to share insights and problem-solving approaches
+- **AI Assistant**: Intelligent chat assistant helps discuss difficult problems and pushes relevant knowledge points
+- **Learning Community**: Creates a collaborative learning atmosphere to boost motivation and engagement
+
+## Design Methodology
+
+### User Research & Iteration
+
+- **Multi-Round Prototype Testing**: Scenario demonstration videos → Low-fidelity prototype interviews → Questionnaire surveys
+- **A/B Testing**: Compares different interaction prompt schemes to optimize the balance between timeliness and distraction
+- **Heuristic Evaluation**: Continuously collects user feedback to iterate and optimize features and interface design
+
+### Validation Results
+
+- Significantly improved system usability (SUS satisfaction scores, task completion rates, etc.)
+- Validated the effectiveness of personalized learning paths and social learning models
+- Provided clear direction for future feature iterations
+
+## Problems Solved
+
+Pain points of traditional video learning platforms:
+- ❌ Lack of supporting practice questions, unable to test learning outcomes promptly
+- ❌ Cannot provide personalized targeted exercises
+- ❌ Learning discussions scattered across various chat apps, lacking systematization
+
+VidTailor's solutions:
+- ✅ Intelligent question generation system based on behavior analysis
+- ✅ Personalized learning paths with instant feedback
+- ✅ Integrated social learning community
+
+## Technical Highlights
+
+- Video content understanding and knowledge point extraction
+- Learning behavior analysis algorithms
+- Personalized recommendation engine
+- Intelligent Q&A and collaboration system
+
+---
+
+*Project Lead: Yue Li*
+
